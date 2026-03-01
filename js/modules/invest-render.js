@@ -54,12 +54,6 @@ function renderRentalTab() {
                     <div class="invest-stat-label">Revenu/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyIncome * 52)}</div>
                 </div>
-                <!-- NOUS AJOUTONS LE COFFRE ICI -->
-                <div class="invest-stat-box" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
-                    <div class="invest-stat-label">Coffre-fort</div>
-                    <div class="invest-stat-value" id="rentalVaultDisplay" style="color:#4ade80;">${fmtCash(state.vault || 0)}</div>
-                    <button onclick="collectVault()" style="width:100%; margin-top:8px; padding:6px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #22c55e, #16a34a); color:white; border-radius:6px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Récupérer</button>
-                </div>
             </div>
         </div>
     `;
@@ -146,8 +140,28 @@ function renderBusinessTab() {
         }
     });
 
+    // Vault balance
+    const vaultAmount = state.businessVault || 0;
+
     // Portfolio Summary Card
     let html = `
+        <div id="businessVaultCard" class="business-vault-card ${vaultAmount > 0 ? '' : 'vault-empty'}">
+            <div class="vault-icon-wrapper">
+                <span class="vault-icon">🏦</span>
+            </div>
+            <div class="vault-content">
+                <div class="vault-label">Coffre-Fort des Revenus</div>
+                <div class="vault-amount" id="vaultAmountDisplay">${fmtCash(vaultAmount)}</div>
+                <div class="vault-rate">+${fmtCash(weeklyRevenue)}/semaine</div>
+            </div>
+            <button 
+                class="vault-collect-btn ${vaultAmount < 0.01 ? 'vault-collect-disabled' : ''}" 
+                onclick="claimBusinessVault()"
+                ${vaultAmount < 0.01 ? 'disabled' : ''}
+            >
+                ${vaultAmount < 0.01 ? 'En attente...' : '💰 Récupérer'}
+            </button>
+        </div>
         <div class="invest-portfolio-summary business-card">
             <h3>🏭 Portefeuille Business</h3>
             <div class="invest-portfolio-grid">
@@ -162,12 +176,6 @@ function renderBusinessTab() {
                 <div class="invest-stat-box">
                     <div class="invest-stat-label">Projection/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyRevenue * 52)}</div>
-                </div>
-                <!-- NOUS AJOUTONS LE COFFRE ICI -->
-                <div class="invest-stat-box" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
-                    <div class="invest-stat-label">Coffre-fort</div>
-                    <div class="invest-stat-value" id="businessVaultDisplay" style="color:#4ade80;">${fmtCash(state.vault || 0)}</div>
-                    <button onclick="collectVault()" style="width:100%; margin-top:8px; padding:6px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #22c55e, #16a34a); color:white; border-radius:6px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Récupérer</button>
                 </div>
             </div>
         </div>
@@ -214,7 +222,7 @@ function renderBusinessTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyBiz('${asset.id}')"
+                        onclick="buyBiz('${asset.id}'); triggerPurchaseAnimation(this);"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -640,3 +648,71 @@ function renderPropertiesTab() {
 }
 
 window.renderPropertiesTab = renderPropertiesTab;
+
+// ============================================
+// VAULT CLAIM FUNCTION
+// ============================================
+window.claimBusinessVault = function () {
+    const amount = state.businessVault || 0;
+    if (amount < 0.01) {
+        showNotification('🏦 Coffre-Fort', 'Rien à récupérer pour le moment.', 'warning');
+        return;
+    }
+    state.cash += amount;
+    state.businessVault = 0;
+
+    showNotification('💰 Revenus Récupérés', `+${fmtCash(amount)} ajouté à votre portefeuille !`, 'success');
+    updateUI();
+    if (typeof renderBusinessTab === 'function') renderBusinessTab();
+};
+
+// ============================================
+// PURCHASE ANIMATION
+// ============================================
+window.triggerPurchaseAnimation = function (buttonEl) {
+    if (!buttonEl) return;
+    const card = buttonEl.closest('.invest-card');
+    if (!card) return;
+
+    card.classList.add('purchase-flash');
+    setTimeout(() => card.classList.remove('purchase-flash'), 600);
+
+    // Spawn floating coins
+    for (let i = 0; i < 8; i++) {
+        const coin = document.createElement('span');
+        coin.textContent = '💰';
+        coin.className = 'floating-coin';
+        const x = (Math.random() - 0.5) * 160;
+        const y = -(Math.random() * 80 + 40);
+        coin.style.setProperty('--dx', x + 'px');
+        coin.style.setProperty('--dy', y + 'px');
+        coin.style.left = (Math.random() * 80 + 10) + '%';
+        document.body.appendChild(coin);
+        setTimeout(() => coin.remove(), 1000);
+    }
+};
+
+// Live vault counter update (called by updateUI every second)
+window.updateVaultDisplay = function () {
+    const el = document.getElementById('vaultAmountDisplay');
+    if (!el) return;
+    const amount = state.businessVault || 0;
+    el.textContent = fmtCash(amount);
+
+    const card = document.getElementById('businessVaultCard');
+    if (!card) return;
+    const btn = card.querySelector('.vault-collect-btn');
+    if (!btn) return;
+
+    if (amount < 0.01) {
+        btn.disabled = true;
+        btn.classList.add('vault-collect-disabled');
+        btn.textContent = 'En attente...';
+        card.classList.add('vault-empty');
+    } else {
+        btn.disabled = false;
+        btn.classList.remove('vault-collect-disabled');
+        btn.textContent = '💰 Récupérer';
+        card.classList.remove('vault-empty');
+    }
+};

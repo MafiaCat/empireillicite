@@ -8,7 +8,6 @@ const state = {
     dealerCount: savedState.dealerCount || 0,
     weaponLevel: savedState.weaponLevel || 0,
     passiveIncome: savedState.passiveIncome || 0,
-    vault: savedState.vault || 0,
     // NOUVEAU SYSTÈME DE PROGRESSION
     productionLevel: savedState.productionLevel || 0,
     unlockedTerritories: savedState.unlockedTerritories || [],
@@ -21,6 +20,7 @@ const state = {
     bank: savedState.bank || 0,
     boosts: savedState.boosts || { doubleYieldUntil: 0 },
     delivery: savedState.delivery || { active: false },
+    businessVault: savedState.businessVault || 0, // Passive income accumulates here
     // -------------------------
     activeBuilding: savedState.activeBuilding || {
         plants: 0,

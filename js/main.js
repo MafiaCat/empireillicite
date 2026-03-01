@@ -16,32 +16,25 @@
             state.lastFinanceUpdate = now;
         }
 
-        // --- PASSIVE INCOME FROM ASSETS ---
-        let totalPassive = 0;
+        // --- PASSIVE INCOME FROM ASSETS → VAULT ---
+        let totalPassiveWeekly = 0;
         if (typeof purchasableAssets !== 'undefined') {
             purchasableAssets.forEach(asset => {
-                if (asset.type === 'business' || asset.type === 'rental' || asset.type === 'real-estate') {
-                    const legacyCountB = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
-                    const legacyCountR = (state.realEstate && state.realEstate[asset.id]) ? state.realEstate[asset.id] : 0;
+                if (asset.type === 'business' || asset.type === 'rental') {
+                    const legacyCount = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
                     const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
-                    const count = Math.max(legacyCountB, legacyCountR, modernCount);
-                    if (count > 0 && asset.income) {
-                        totalPassive += count * asset.income;
-                    }
+                    const count = Math.max(legacyCount, modernCount);
+                    totalPassiveWeekly += (asset.income || 0) * count;
                 }
             });
         }
 
-        if (totalPassive > 0) {
-            // passive is per week for standard (income is per week conceptually or per whatever base unit)
-            // Typically in this idle game income was per tick or per second. 
-            // Original code: tickIncome = totalPassive / 10; -> This means totalPassive is income per second.
-            const tickIncome = totalPassive / 10;
-            state.vault = (state.vault || 0) + tickIncome; // NEW: accumulates in vault
-            state.passiveIncome = totalPassive; // Keep track for UI
+        if (totalPassiveWeekly > 0) {
+            // Weekly income ticks every 100ms → per tick: income / (7 days * 24h * 3600s * 10 ticks/s)
+            const tickIncome = totalPassiveWeekly / (7 * 24 * 3600 * 10);
+            state.businessVault = (state.businessVault || 0) + tickIncome;
+            state.passiveIncome = totalPassiveWeekly; // For UI display
         }
-
-        // --- LOGIQUE TRANSPORT (Refactorisé) ---
 
         for (const [type, config] of Object.entries(VEHICLE_STATS)) {
             if (state.fleet[type]) {
@@ -78,12 +71,6 @@
                     }
                 }
             }
-        }
-
-        // Revenus passifs des assets
-        if (state.passiveIncome > 0) {
-            // This second passive block in main.js will also be updated to fill the vault if needed. 
-            // Wait, this duplicates the income? Original code had this AND the above. Let's just remove this duplicate to prevent double rewarding.
         }
 
         // Plantation automatique
