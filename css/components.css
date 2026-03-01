@@ -4387,7 +4387,8 @@ button.buy-asset-refined {
     animation: goldPulse 0.4s ease-out forwards !important;
     background: linear-gradient(135deg, #fde047, #f59e0b) !important;
     color: #1e293b !important;
-    border: none !important;
+    border-color: transparent !important;
+    /* Preserves border width to prevent layout shifting vertically */
 }
 
 /* The shockwave element itself */
