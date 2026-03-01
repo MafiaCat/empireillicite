@@ -102,7 +102,13 @@ function renderCarsTab() {
     });
 
     html += '</div>';
-    safeSetInnerHTML(container, html);
+
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 // ============================================
@@ -204,7 +210,13 @@ function renderArtTab() {
     });
 
     html += '</div>';
-    safeSetInnerHTML(container, html);
+
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 // ============================================
@@ -306,7 +318,13 @@ function renderJewelryTab() {
     });
 
     html += '</div>';
-    safeSetInnerHTML(container, html);
+
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 // ============================================
@@ -415,7 +433,13 @@ function renderMyCollections() {
     });
 
     html += '</div></div>';
-    safeSetInnerHTML(container, html);
+
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 // Expose functions globally

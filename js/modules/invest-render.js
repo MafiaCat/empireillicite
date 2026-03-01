@@ -137,7 +137,12 @@ function renderRentalTab() {
         html += '</div>';
     }
 
-    safeSetInnerHTML(container, html);
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 /**
@@ -248,7 +253,12 @@ function renderBusinessTab() {
         html += '</div>';
     }
 
-    safeSetInnerHTML(container, html);
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 /**
@@ -392,7 +402,12 @@ function renderStockTab() {
     // Destroy ANY existing charts before wiping the DOM to prevent ghost events
     if (typeof destroyCharts === 'function') destroyCharts();
 
-    safeSetInnerHTML(gridContainer, html);
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    gridContainer.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 
     // Initialize charts after DOM is ready
     setTimeout(() => {
@@ -545,7 +560,13 @@ function renderCryptoTab() {
     });
 
     html += '</div>';
-    safeSetInnerHTML(container, html);
+
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 
     // Initialize charts after DOM is ready
     setTimeout(() => {
@@ -606,13 +627,13 @@ function renderPropertiesTab() {
     console.log("Owned Properties found:", ownedProperties);
 
     if (ownedProperties.length === 0) {
-        safeSetInnerHTML(container, `
+        container.innerHTML = `
             <div style='text-align:center; padding:60px 20px;'>
                 <div style='font-size:64px; margin-bottom:20px; opacity:0.3;'>🏠</div>
                 <h3 style='margin:0 0 10px 0; color:var(--text); opacity:0.7;'>Aucune Propriété</h3>
                 <p style='margin:0; color:var(--muted); font-size:14px;'>Acquérez des propriétés immobilières pour les voir ici.</p>
             </div>
-        `);
+        `;
         return;
     }
 
@@ -672,7 +693,12 @@ function renderPropertiesTab() {
         `;
     });
     html += '</div></div>';
-    safeSetInnerHTML(container, html);
+    const mainEl = document.querySelector('main');
+    const scrollPos = mainEl ? mainEl.scrollTop : 0;
+
+    container.innerHTML = html;
+
+    if (mainEl) mainEl.scrollTop = scrollPos;
 }
 
 window.renderPropertiesTab = renderPropertiesTab;
