@@ -508,7 +508,7 @@ function buyWeapon() {
     } else showNotification('❌ Erreur', `Prix: $${fmtCash(price)}`, 'error');
 }
 
-function buyBiz(id, cardId = null) {
+function buyBiz(id) {
     const b = purchasableAssets.find(x => x.id === id);
     if (!b) return;
 
@@ -539,26 +539,18 @@ function buyBiz(id, cardId = null) {
         state.assets[id].owned = true;
 
         showNotification("Business", b.name, "success");
+        state.lastPurchasedAsset = id;
+        setTimeout(() => { if (state.lastPurchasedAsset === id) state.lastPurchasedAsset = null; }, 1000);
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
+        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+        if (typeof renderBusinessTab === 'function') renderBusinessTab();
         updateUI();
-
-        // Animate card BEFORE re-rendering (re-render destroys the element)
-        if (cardId) {
-            if (typeof triggerPurchaseAnimation === 'function') triggerPurchaseAnimation(cardId);
-            setTimeout(() => {
-                if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-                if (typeof renderBusinessTab === 'function') renderBusinessTab();
-            }, 750);
-        } else {
-            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-            if (typeof renderBusinessTab === 'function') renderBusinessTab();
-        }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
 }
 
-function buyRealEstate(id, cardId = null) {
+function buyRealEstate(id) {
     const r = purchasableAssets.find(x => x.id === id);
     if (!r) return;
 
@@ -587,20 +579,12 @@ function buyRealEstate(id, cardId = null) {
         state.assets[id].owned = true;
 
         showNotification("Immobilier", r.name, "success");
+        state.lastPurchasedAsset = id;
+        setTimeout(() => { if (state.lastPurchasedAsset === id) state.lastPurchasedAsset = null; }, 1000);
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
+        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+        if (typeof renderRentalTab === 'function') renderRentalTab();
         updateUI();
-
-        // Animate card BEFORE re-rendering (re-render destroys the element)
-        if (cardId) {
-            if (typeof triggerPurchaseAnimation === 'function') triggerPurchaseAnimation(cardId);
-            setTimeout(() => {
-                if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-                if (typeof renderRentalTab === 'function') renderRentalTab();
-            }, 750);
-        } else {
-            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-            if (typeof renderRentalTab === 'function') renderRentalTab();
-        }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }

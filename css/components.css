@@ -4308,91 +4308,6 @@ button.buy-asset-refined {
     color: white;
 }
 
-/* Purchase Animation – Premium */
-@keyframes assetBuyPress {
-    0% {
-        transform: scale(1);
-    }
-
-    30% {
-        transform: scale(0.95);
-    }
-
-    60% {
-        transform: scale(1.06);
-    }
-
-    80% {
-        transform: scale(0.99);
-    }
-
-    100% {
-        transform: scale(1);
-    }
-}
-
-@keyframes assetBuyGlow {
-    0% {
-        box-shadow: 0 0 0 0 rgba(99, 255, 180, 0);
-        border-color: rgba(59, 130, 246, 0.2);
-    }
-
-    25% {
-        box-shadow: 0 0 0 6px rgba(99, 255, 180, 0.5), 0 0 30px 8px rgba(56, 189, 248, 0.25);
-        border-color: #22d3ee;
-    }
-
-    70% {
-        box-shadow: 0 0 0 12px rgba(99, 255, 180, 0.1), 0 0 50px 12px rgba(56, 189, 248, 0.1);
-        border-color: rgba(34, 211, 170, 0.5);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(99, 255, 180, 0);
-        border-color: rgba(59, 130, 246, 0.2);
-    }
-}
-
-@keyframes assetBuyShimmer {
-    0% {
-        background-position: -200% center;
-        opacity: 0;
-    }
-
-    10% {
-        opacity: 1;
-    }
-
-    100% {
-        background-position: 300% center;
-        opacity: 0;
-    }
-}
-
-.asset-purchased-anim {
-    animation:
-        assetBuyPress 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-        assetBuyGlow 0.7s ease-out;
-    position: relative;
-    overflow: hidden;
-}
-
-.asset-purchased-anim::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(105deg,
-            transparent 30%,
-            rgba(255, 255, 255, 0.25) 50%,
-            rgba(134, 239, 172, 0.3) 60%,
-            transparent 75%);
-    background-size: 300% 100%;
-    animation: assetBuyShimmer 0.55s ease-out forwards;
-    pointer-events: none;
-    border-radius: inherit;
-    z-index: 20;
-}
-
 /* Vault (Coffre-fort) block */
 .property-vault-card {
     display: flex;
@@ -4466,6 +4381,86 @@ button.buy-asset-refined {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+}
+
+/* Dopamine Buy Animation */
+.asset-purchase-anim {
+    animation: assetBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes assetBounce {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(0.92);
+    }
+
+    60% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.asset-purchase-anim::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+    animation: assetHalo 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes assetHalo {
+    0% {
+        box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(6, 182, 212, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(6, 182, 212, 0);
+    }
+}
+
+.asset-purchase-anim::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 35%,
+            rgba(251, 191, 36, 0.4) 45%,
+            rgba(255, 255, 255, 0.8) 50%,
+            rgba(251, 191, 36, 0.4) 55%,
+            transparent 65%);
+    transform: rotate(45deg) translateY(-100%);
+    animation: assetShimmer 0.6s ease-out forwards;
+    pointer-events: none;
+    z-index: 11;
+}
+
+@keyframes assetShimmer {
+    0% {
+        transform: rotate(45deg) translateY(-100%);
+    }
+
+    100% {
+        transform: rotate(45deg) translateY(100%);
+    }
 }
 
 .invest-card::before {
