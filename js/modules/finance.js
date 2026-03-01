@@ -531,11 +531,17 @@ function buyBiz(id, event) {
             btn.classList.add('golden-pulse-btn');
             btn.innerHTML = '✨ Transaction...';
 
-            // 2. Wait for animation to finish before actual purchase
+            // 2. Wait for animation to finish before showing "Approuvé"
             setTimeout(() => {
-                executeBuyBiz(id, b, owned, cost);
-                // Cleanup classes so it can be re-triggered
                 btn.classList.remove('golden-pulse-btn');
+                btn.classList.add('approved-pulse-btn');
+                btn.innerHTML = '✅ Approuvé';
+
+                // 3. Execute purchase after showing approved state
+                setTimeout(() => {
+                    executeBuyBiz(id, b, owned, cost);
+                    btn.classList.remove('approved-pulse-btn');
+                }, 400);
             }, 500);
             return; // Early return, purchase will happen in setTimeout
         }
@@ -589,11 +595,17 @@ function buyRealEstate(id, event) {
             btn.classList.add('golden-pulse-btn');
             btn.innerHTML = '✨ Transaction...';
 
-            // 2. Wait for animation to finish before actual purchase
+            // 2. Wait for animation to finish before showing "Approuvé"
             setTimeout(() => {
-                executeBuyRealEstate(id, r, owned, cost);
-                // Cleanup classes
                 btn.classList.remove('golden-pulse-btn');
+                btn.classList.add('approved-pulse-btn');
+                btn.innerHTML = '✅ Approuvé';
+
+                // 3. Execute purchase after showing approved state
+                setTimeout(() => {
+                    executeBuyRealEstate(id, r, owned, cost);
+                    btn.classList.remove('approved-pulse-btn');
+                }, 400);
             }, 500);
             return; // Early return, purchase will happen in setTimeout
         }

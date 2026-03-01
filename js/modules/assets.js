@@ -68,11 +68,17 @@ function buyAsset(id, event) {
             btn.classList.add('golden-pulse-btn');
             btn.innerHTML = '✨ Transaction...';
 
-            // 2. Wait for animation to finish before actual purchase
+            // 2. Wait for animation to finish before showing "Approuvé"
             setTimeout(() => {
-                executeBuyAsset(id, i);
-                // Cleanup classes
                 btn.classList.remove('golden-pulse-btn');
+                btn.classList.add('approved-pulse-btn');
+                btn.innerHTML = '✅ Approuvé';
+
+                // 3. Execute purchase after showing approved state
+                setTimeout(() => {
+                    executeBuyAsset(id, i);
+                    btn.classList.remove('approved-pulse-btn');
+                }, 400);
             }, 500);
             return;
         }
