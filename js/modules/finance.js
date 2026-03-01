@@ -540,23 +540,27 @@ function buyBiz(id, cardId = null) {
 
         showNotification("Business", b.name, "success");
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
-        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-        if (typeof renderBusinessTab === 'function') renderBusinessTab();
         updateUI();
 
+        // Animate card BEFORE re-rendering (re-render destroys the element)
         if (cardId) {
-            setTimeout(() => {
-                const cardEl = document.getElementById(cardId);
-                if (cardEl) {
-                    cardEl.classList.remove('asset-purchased-anim');
-                    // Force reflow
-                    void cardEl.offsetWidth;
-                    cardEl.classList.add('asset-purchased-anim');
-                    setTimeout(() => {
-                        if (cardEl) cardEl.classList.remove('asset-purchased-anim');
-                    }, 600);
-                }
-            }, 50);
+            const cardEl = document.getElementById(cardId);
+            if (cardEl) {
+                cardEl.classList.remove('asset-purchased-anim');
+                void cardEl.offsetWidth; // force reflow
+                cardEl.classList.add('asset-purchased-anim');
+                // Re-render AFTER animation completes
+                setTimeout(() => {
+                    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+                    if (typeof renderBusinessTab === 'function') renderBusinessTab();
+                }, 750);
+            } else {
+                if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+                if (typeof renderBusinessTab === 'function') renderBusinessTab();
+            }
+        } else {
+            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+            if (typeof renderBusinessTab === 'function') renderBusinessTab();
         }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
@@ -593,23 +597,27 @@ function buyRealEstate(id, cardId = null) {
 
         showNotification("Immobilier", r.name, "success");
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
-        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-        if (typeof renderRentalTab === 'function') renderRentalTab();
         updateUI();
 
+        // Animate card BEFORE re-rendering (re-render destroys the element)
         if (cardId) {
-            setTimeout(() => {
-                const cardEl = document.getElementById(cardId);
-                if (cardEl) {
-                    cardEl.classList.remove('asset-purchased-anim');
-                    // Force reflow
-                    void cardEl.offsetWidth;
-                    cardEl.classList.add('asset-purchased-anim');
-                    setTimeout(() => {
-                        if (cardEl) cardEl.classList.remove('asset-purchased-anim');
-                    }, 600);
-                }
-            }, 50);
+            const cardEl = document.getElementById(cardId);
+            if (cardEl) {
+                cardEl.classList.remove('asset-purchased-anim');
+                void cardEl.offsetWidth; // force reflow
+                cardEl.classList.add('asset-purchased-anim');
+                // Re-render AFTER animation completes
+                setTimeout(() => {
+                    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+                    if (typeof renderRentalTab === 'function') renderRentalTab();
+                }, 750);
+            } else {
+                if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+                if (typeof renderRentalTab === 'function') renderRentalTab();
+            }
+        } else {
+            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+            if (typeof renderRentalTab === 'function') renderRentalTab();
         }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
