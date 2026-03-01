@@ -195,6 +195,11 @@ function applyOfflineProgression() {
             }
         });
     }
+    let earned = 0;
+    if (weeklyIncome > 0) {
+        const incomePerHour = weeklyIncome / (7 * 24);
+        earned = Math.floor(incomePerHour * cappedHours);
+    }
 
     // ==========================================
     // SEED PRODUCTION SIMULATION
