@@ -627,6 +627,7 @@ function renderPropertiesTab() {
     const totalValue = ownedProperties.reduce((sum, p) => sum + (p.price * p.ownedCount), 0);
     const totalCount = ownedProperties.reduce((sum, p) => sum + p.ownedCount, 0);
 
+    let html = '<div style=\'padding:10px;\'>';
     html += `
         <div style='background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);'>
             <h3 style='margin:0 0 16px 0; font-size:20px; font-weight:700;'>🏠 Portfolio Immobilier</h3>
