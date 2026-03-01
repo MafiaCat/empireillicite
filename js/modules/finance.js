@@ -544,20 +544,11 @@ function buyBiz(id, cardId = null) {
 
         // Animate card BEFORE re-rendering (re-render destroys the element)
         if (cardId) {
-            const cardEl = document.getElementById(cardId);
-            if (cardEl) {
-                cardEl.classList.remove('asset-purchased-anim');
-                void cardEl.offsetWidth; // force reflow
-                cardEl.classList.add('asset-purchased-anim');
-                // Re-render AFTER animation completes
-                setTimeout(() => {
-                    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-                    if (typeof renderBusinessTab === 'function') renderBusinessTab();
-                }, 750);
-            } else {
+            if (typeof triggerPurchaseAnimation === 'function') triggerPurchaseAnimation(cardId);
+            setTimeout(() => {
                 if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
                 if (typeof renderBusinessTab === 'function') renderBusinessTab();
-            }
+            }, 750);
         } else {
             if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
             if (typeof renderBusinessTab === 'function') renderBusinessTab();
@@ -601,20 +592,11 @@ function buyRealEstate(id, cardId = null) {
 
         // Animate card BEFORE re-rendering (re-render destroys the element)
         if (cardId) {
-            const cardEl = document.getElementById(cardId);
-            if (cardEl) {
-                cardEl.classList.remove('asset-purchased-anim');
-                void cardEl.offsetWidth; // force reflow
-                cardEl.classList.add('asset-purchased-anim');
-                // Re-render AFTER animation completes
-                setTimeout(() => {
-                    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-                    if (typeof renderRentalTab === 'function') renderRentalTab();
-                }, 750);
-            } else {
+            if (typeof triggerPurchaseAnimation === 'function') triggerPurchaseAnimation(cardId);
+            setTimeout(() => {
                 if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
                 if (typeof renderRentalTab === 'function') renderRentalTab();
-            }
+            }, 750);
         } else {
             if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
             if (typeof renderRentalTab === 'function') renderRentalTab();

@@ -7,6 +7,78 @@ console.log(">>> INVEST-RENDER.JS v4 LOADED <<<");
 // Helper function for DOM element selection - Renamed to avoid global conflict
 const elInvest = (id) => document.getElementById(id);
 
+// Inject animation keyframes once into <head>
+(function injectAnimStyles() {
+    if (document.getElementById('_invest_anim_styles')) return;
+    const s = document.createElement('style');
+    s.id = '_invest_anim_styles';
+    s.textContent = `
+        @keyframes _shimmerSlide {
+            from { background-position: -150% center; }
+            to   { background-position: 250% center; }
+        }
+        @keyframes _checkPop {
+            0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+            55%  { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+            75%  { transform: translate(-50%, -60%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -80%) scale(0.95); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(s);
+})();
+
+// Purchase animation – 100% JS for iOS compatibility
+window.triggerPurchaseAnimation = function (cardId) {
+    const card = document.getElementById(cardId);
+    if (!card) return;
+
+    // --- 1. Spring bounce via inline style ---
+    card.style.transition = 'none';
+    card.style.transform = 'scale(0.94)';
+    card.style.borderColor = '#22d3ee';
+    card.style.boxShadow = '0 0 0 3px rgba(34,211,238,0.6), 0 0 40px 8px rgba(34,211,238,0.2)';
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        card.style.transition = 'transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.6s ease-out, border-color 0.6s ease-out';
+        card.style.transform = 'scale(1.05)';
+
+        setTimeout(() => {
+            card.style.transform = 'scale(1)';
+            card.style.boxShadow = '';
+            card.style.borderColor = '';
+            setTimeout(() => { card.style.transition = ''; }, 450);
+        }, 200);
+    }));
+
+    // --- 2. Shimmer sweep overlay ---
+    const shimmer = document.createElement('div');
+    shimmer.style.cssText = `
+        position: absolute; inset: 0;
+        background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.35) 50%, rgba(134,239,172,0.25) 58%, transparent 72%);
+        background-size: 250% 100%; background-position: -150% center;
+        pointer-events: none; border-radius: inherit; z-index: 100;
+        animation: _shimmerSlide 0.5s ease-out forwards;
+    `;
+    card.style.position = 'relative';
+    card.style.overflow = 'hidden';
+    card.appendChild(shimmer);
+    setTimeout(() => shimmer.remove(), 550);
+
+    // --- 3. Floating "Acheté ✓" badge ---
+    const badge = document.createElement('div');
+    badge.textContent = 'Acheté ✓';
+    badge.style.cssText = `
+        position: absolute; top: 50%; left: 50%;
+        transform: translate(-50%, -50%) scale(0.3);
+        font-size: 18px; font-weight: 900; letter-spacing: 1px;
+        color: #22d3ee; text-shadow: 0 0 16px rgba(34,211,238,0.9);
+        pointer-events: none; z-index: 200; white-space: nowrap;
+        animation: _checkPop 0.75s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    `;
+    card.appendChild(badge);
+    setTimeout(() => badge.remove(), 800);
+};
+
 // Shared vault collect function, exposed globally
 window.collectPropertyVault = function () {
     const amount = Math.floor(state.propertyVault || 0);
