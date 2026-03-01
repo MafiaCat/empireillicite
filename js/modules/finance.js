@@ -508,7 +508,7 @@ function buyWeapon() {
     } else showNotification('❌ Erreur', `Prix: $${fmtCash(price)}`, 'error');
 }
 
-function buyBiz(id) {
+function buyBiz(id, cardId = null) {
     const b = purchasableAssets.find(x => x.id === id);
     if (!b) return;
 
@@ -542,14 +542,28 @@ function buyBiz(id) {
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
         if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
         if (typeof renderBusinessTab === 'function') renderBusinessTab();
-        if (typeof playPurchaseAnimation === 'function') playPurchaseAnimation();
         updateUI();
+
+        if (cardId) {
+            setTimeout(() => {
+                const cardEl = document.getElementById(cardId);
+                if (cardEl) {
+                    cardEl.classList.remove('asset-purchased-anim');
+                    // Force reflow
+                    void cardEl.offsetWidth;
+                    cardEl.classList.add('asset-purchased-anim');
+                    setTimeout(() => {
+                        if (cardEl) cardEl.classList.remove('asset-purchased-anim');
+                    }, 600);
+                }
+            }, 50);
+        }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
 }
 
-function buyRealEstate(id) {
+function buyRealEstate(id, cardId = null) {
     const r = purchasableAssets.find(x => x.id === id);
     if (!r) return;
 
@@ -581,8 +595,22 @@ function buyRealEstate(id) {
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
         if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
         if (typeof renderRentalTab === 'function') renderRentalTab();
-        if (typeof playPurchaseAnimation === 'function') playPurchaseAnimation();
         updateUI();
+
+        if (cardId) {
+            setTimeout(() => {
+                const cardEl = document.getElementById(cardId);
+                if (cardEl) {
+                    cardEl.classList.remove('asset-purchased-anim');
+                    // Force reflow
+                    void cardEl.offsetWidth;
+                    cardEl.classList.add('asset-purchased-anim');
+                    setTimeout(() => {
+                        if (cardEl) cardEl.classList.remove('asset-purchased-anim');
+                    }, 600);
+                }
+            }, 50);
+        }
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
@@ -612,57 +640,3 @@ window.buyWeapon = buyWeapon;
 window.buyBiz = buyBiz;
 window.buyRealEstate = buyRealEstate;
 window.bankTransaction = bankTransaction;
-
-window.collectVault = function () {
-    if (!state.vault || state.vault <= 0) {
-        showNotification('Coffre Vide', 'Rien à récupérer pour le moment.', 'warning');
-        return;
-    }
-    const amount = state.vault;
-    state.cash += amount;
-    state.vault = 0;
-
-    // Bonus XP based on collected amount
-    const xpGain = Math.floor(amount / 500);
-    if (xpGain > 0 && state.achievements) state.achievements.points += xpGain;
-
-    showNotification('💰 Revenus Collectés', `Vous avez récupéré $${fmtCash(amount)}`, 'success');
-    updateUI();
-};
-
-window.playPurchaseAnimation = function () {
-    const anim = document.createElement('div');
-    anim.innerHTML = '🎉 ACHAT VALIDÉ 🎊';
-    Object.assign(anim.style, {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%) scale(0.5)',
-        opacity: '0',
-        background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-        color: 'white',
-        padding: '20px 40px',
-        borderRadius: '16px',
-        fontSize: '24px',
-        fontWeight: '900',
-        zIndex: '9999',
-        pointerEvents: 'none',
-        boxShadow: '0 10px 30px rgba(34, 197, 94, 0.4)',
-        transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-    });
-    document.body.appendChild(anim);
-
-    // Trigger reflow
-    void anim.offsetWidth;
-
-    // Pop in
-    anim.style.transform = 'translate(-50%, -50%) scale(1.2)';
-    anim.style.opacity = '1';
-
-    // Fade out and remove
-    setTimeout(() => {
-        anim.style.opacity = '0';
-        anim.style.transform = 'translate(-50%, -50%) scale(0.8)';
-        setTimeout(() => anim.remove(), 500);
-    }, 1000);
-};

@@ -103,7 +103,7 @@ function renderRentalTab() {
             const roi = asset.price > 0 ? ((asset.income * 52) / asset.price * 100).toFixed(1) : 0;
 
             html += `
-                <div class="invest-card rental-card">
+                <div class="invest-card rental-card" id="card-rental-${asset.id}">
                     ${count > 0 ? `<div class="invest-card-badge invest-card-owned">Possédé: ${count}</div>` : ''}
                     <div class="invest-card-header">
                         <div class="invest-card-icon">${asset.icon}</div>
@@ -124,7 +124,7 @@ function renderRentalTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyRealEstate('${asset.id}')"
+                        onclick="buyRealEstate('${asset.id}', 'card-rental-${asset.id}')"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -214,7 +214,7 @@ function renderBusinessTab() {
             const roi = asset.price > 0 ? ((asset.income * 52) / asset.price * 100).toFixed(1) : 0;
 
             html += `
-                <div class="invest-card business-card">
+                <div class="invest-card business-card" id="card-biz-${asset.id}">
                     ${count > 0 ? `<div class="invest-card-badge invest-card-owned">Possédé: ${count}</div>` : ''}
                     <div class="invest-card-header">
                         <div class="invest-card-icon">${asset.icon}</div>
@@ -235,7 +235,7 @@ function renderBusinessTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyBiz('${asset.id}')"
+                        onclick="buyBiz('${asset.id}', 'card-biz-${asset.id}')"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
