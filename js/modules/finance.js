@@ -508,7 +508,7 @@ function buyWeapon() {
     } else showNotification('❌ Erreur', `Prix: $${fmtCash(price)}`, 'error');
 }
 
-function buyBiz(id) {
+function buyBiz(id, btnElement) {
     const b = purchasableAssets.find(x => x.id === id);
     if (!b) return;
 
@@ -539,18 +539,23 @@ function buyBiz(id) {
         state.assets[id].owned = true;
 
         showNotification("Business", b.name, "success");
-        state.lastPurchasedAsset = id;
-        setTimeout(() => { if (state.lastPurchasedAsset === id) state.lastPurchasedAsset = null; }, 1000);
-        if (typeof renderFinanceOld === 'function') renderFinanceOld();
-        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-        if (typeof renderBusinessTab === 'function') renderBusinessTab();
-        updateUI();
+        if (typeof playPurchaseAnimation === 'function' && btnElement) {
+            playPurchaseAnimation(btnElement);
+        }
+
+        // Slight delay for the UI update so the animation can play on the existing button
+        setTimeout(() => {
+            if (typeof renderFinanceOld === 'function') renderFinanceOld();
+            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+            if (typeof renderBusinessTab === 'function') renderBusinessTab();
+            updateUI();
+        }, 300);
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
 }
 
-function buyRealEstate(id) {
+function buyRealEstate(id, btnElement) {
     const r = purchasableAssets.find(x => x.id === id);
     if (!r) return;
 
@@ -579,12 +584,17 @@ function buyRealEstate(id) {
         state.assets[id].owned = true;
 
         showNotification("Immobilier", r.name, "success");
-        state.lastPurchasedAsset = id;
-        setTimeout(() => { if (state.lastPurchasedAsset === id) state.lastPurchasedAsset = null; }, 1000);
-        if (typeof renderFinanceOld === 'function') renderFinanceOld();
-        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-        if (typeof renderRentalTab === 'function') renderRentalTab();
-        updateUI();
+        if (typeof playPurchaseAnimation === 'function' && btnElement) {
+            playPurchaseAnimation(btnElement);
+        }
+
+        // Slight delay for UI update to let the animation play
+        setTimeout(() => {
+            if (typeof renderFinanceOld === 'function') renderFinanceOld();
+            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+            if (typeof renderRentalTab === 'function') renderRentalTab();
+            updateUI();
+        }, 300);
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }

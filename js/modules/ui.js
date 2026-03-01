@@ -144,6 +144,68 @@ function processNotificationQueue() {
     notification.timeout = setTimeout(close, 4000);
 }
 
+// ==========================================
+// DOPAMINE PURCHASE ANIMATION HELPER
+// ==========================================
+window.playPurchaseAnimation = function (buttonElement) {
+    if (!buttonElement) return;
+
+    // 1. Find the parent card
+    const card = buttonElement.closest('.invest-card');
+    if (card) {
+        // Trigger the golden pulse + shake
+        card.classList.remove('purchasing');
+        void card.offsetWidth; // Trigger reflow
+        card.classList.add('purchasing');
+
+        // Remove class after animation completes (0.8s)
+        setTimeout(() => {
+            if (card) card.classList.remove('purchasing');
+        }, 800);
+
+        // Flash the "Possédé: X" badge if it exists
+        const badge = card.querySelector('.invest-card-owned');
+        if (badge) {
+            badge.classList.remove('flash');
+            void badge.offsetWidth;
+            badge.classList.add('flash');
+            setTimeout(() => {
+                if (badge) badge.classList.remove('flash');
+            }, 500);
+        }
+    }
+
+    // 2. Spawn floating cash particles
+    const rect = buttonElement.getBoundingClientRect();
+    const particleCount = 5;
+
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'cash-particle';
+        particle.textContent = ['💸', '💵', '💰', '$', '✨'][Math.floor(Math.random() * 5)];
+
+        // Position randomly around the button
+        const startX = rect.left + (Math.random() * rect.width);
+        const startY = rect.top + (rect.height / 2);
+
+        particle.style.left = startX + 'px';
+        particle.style.top = startY + 'px';
+
+        // Slight random delay and drift
+        particle.style.animationDelay = (Math.random() * 0.2) + 's';
+        const drift = (Math.random() - 0.5) * 40;
+        particle.style.transform = `translateX(${drift}px)`;
+
+        document.body.appendChild(particle);
+
+        // Remove particle after animation (1s)
+        setTimeout(() => {
+            particle.remove();
+        }, 1200);
+    }
+}
+
+
 function applyTheme() {
     if (state.theme === 'light') {
         document.body.classList.add('light-mode');

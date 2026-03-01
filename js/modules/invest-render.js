@@ -102,10 +102,8 @@ function renderRentalTab() {
             const canAfford = state.cash >= currentPrice;
             const roi = asset.price > 0 ? ((asset.income * 52) / asset.price * 100).toFixed(1) : 0;
 
-            const isPurchased = state.lastPurchasedAsset === asset.id;
-
             html += `
-                <div class="invest-card rental-card ${isPurchased ? 'asset-purchase-anim' : ''}">
+                <div class="invest-card rental-card">
                     ${count > 0 ? `<div class="invest-card-badge invest-card-owned">Possédé: ${count}</div>` : ''}
                     <div class="invest-card-header">
                         <div class="invest-card-icon">${asset.icon}</div>
@@ -126,7 +124,7 @@ function renderRentalTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyRealEstate('${asset.id}')"
+                        onclick="buyRealEstate('${asset.id}', this)"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -215,10 +213,8 @@ function renderBusinessTab() {
             const canAfford = state.cash >= currentPrice;
             const roi = asset.price > 0 ? ((asset.income * 52) / asset.price * 100).toFixed(1) : 0;
 
-            const isPurchased = state.lastPurchasedAsset === asset.id;
-
             html += `
-                <div class="invest-card business-card ${isPurchased ? 'asset-purchase-anim' : ''}">
+                <div class="invest-card business-card">
                     ${count > 0 ? `<div class="invest-card-badge invest-card-owned">Possédé: ${count}</div>` : ''}
                     <div class="invest-card-header">
                         <div class="invest-card-icon">${asset.icon}</div>
@@ -239,7 +235,7 @@ function renderBusinessTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyBiz('${asset.id}')"
+                        onclick="buyBiz('${asset.id}', this)"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
