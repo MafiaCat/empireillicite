@@ -537,11 +537,14 @@ function buyBiz(id, event) {
                 btn.classList.add('approved-pulse-btn');
                 btn.innerHTML = '✅ Approuvé';
 
-                // 3. Execute purchase after showing approved state
+                // Trigger celebratory confetti burst from button 🎊
+                if (typeof triggerConfetti === 'function') triggerConfetti(btn);
+
+                // 3. Execute purchase after showing approved state (extended to 1400ms)
                 setTimeout(() => {
                     executeBuyBiz(id, b, owned, cost);
                     btn.classList.remove('approved-pulse-btn');
-                }, 400);
+                }, 1400);
             }, 500);
             return; // Early return, purchase will happen in setTimeout
         }
@@ -601,11 +604,14 @@ function buyRealEstate(id, event) {
                 btn.classList.add('approved-pulse-btn');
                 btn.innerHTML = '✅ Approuvé';
 
-                // 3. Execute purchase after showing approved state
+                // Trigger celebratory confetti burst from button 🎊
+                if (typeof triggerConfetti === 'function') triggerConfetti(btn);
+
+                // 3. Execute purchase after showing approved state (extended to 1400ms)
                 setTimeout(() => {
                     executeBuyRealEstate(id, r, owned, cost);
                     btn.classList.remove('approved-pulse-btn');
-                }, 400);
+                }, 1400);
             }, 500);
             return; // Early return, purchase will happen in setTimeout
         }
