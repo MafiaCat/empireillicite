@@ -16,13 +16,6 @@
             state.lastFinanceUpdate = now;
         }
 
-        // --- SPECIAL REQUEST EXPIRY ---
-        if (state.specialRequest?.active && Date.now() > state.specialRequest.expires) {
-            state.specialRequest.active = false;
-            showNotification('🚨 Mission', 'Demande expirée', 'error');
-            updateUI();
-        }
-
         // --- PASSIVE INCOME FROM ASSETS ---
         let totalPassive = 0;
         if (typeof BUSINESSES !== 'undefined' && state.businesses) {
@@ -105,30 +98,10 @@
         // updateStockPrices(); // Merged into updateCryptoPrices
         updateCharts();
 
-        // --- SPECIAL REQUEST SPAWNER ---
-        if (!state.specialRequest?.active && Math.random() > 0.8) {
-            spawnSpecialRequest();
-        }
+
     }
 
-    function spawnSpecialRequest() {
-        const amount = Math.floor(Math.random() * 50) + 10; // 10g to 60g
-        const bonus = 1.5 + Math.random();
-        const price = Math.floor(amount * marketPrice * bonus);
-        const names = ["Urgence Maire", "VIP Club", "Besoin Express", "Client Pressé"];
 
-        state.specialRequest = {
-            active: true,
-            name: names[Math.floor(Math.random() * names.length)],
-            desc: "Paiement cash immédiat.",
-            amount: amount,
-            price: price,
-            expires: Date.now() + 30000 // 30 seconds
-        };
-
-        showNotification('🚨 Mission VIP', `Nouvelle demande : ${state.specialRequest.name}`, 'warning');
-        if (typeof updateUI === 'function') updateUI();
-    }
     setInterval(saveGame, 10000); // Sauvegarde toutes les 10 secondes
     setInterval(updateCryptoPrices, 10000); // Prix crypto/actions toutes les 10 secondes
     setInterval(updateJobUI, 1000); // Cooldown job chaque seconde

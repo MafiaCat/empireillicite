@@ -19,7 +19,6 @@ const state = {
     quests: savedState.quests || { date: '', list: [] },
     bank: savedState.bank || 0,
     boosts: savedState.boosts || { doubleYieldUntil: 0 },
-    specialRequest: savedState.specialRequest || { active: false },
     delivery: savedState.delivery || { active: false },
     // -------------------------
     activeBuilding: savedState.activeBuilding || {

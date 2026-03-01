@@ -691,75 +691,11 @@ const updateUI = function () {
         (state.crypto.doge * cryptoPrices.doge);
     if (el('totalCryptoValue')) el('totalCryptoValue').textContent = fmtCash(totalCryptoValue);
 
-    // --- SPECIAL REQUEST RENDERING ---
-    renderSpecialRequest();
-
     updateProgressBars();
     updateJobUI();
     // renderShopInventory(); // REMOVED - Handled by renderMyCollections in collection-render.js
 }
 
-function renderSpecialRequest() {
-    const container = document.getElementById('specialRequestDisplay');
-    if (!container) return;
-
-    if (state.specialRequest?.active) {
-        const req = state.specialRequest;
-        const timeLeft = Math.ceil((req.expires - Date.now()) / 1000);
-
-        if (timeLeft <= 0) {
-            container.style.display = 'none';
-            return;
-        }
-
-        container.style.display = 'block';
-        container.innerHTML = `
-            <div class="card urgent-request" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: none; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <h4 style="margin:0; color:white; font-size:16px;">🚨 ${req.name}</h4>
-                        <div style="font-size:12px; opacity:0.9;">${req.desc}</div>
-                    </div>
-                    <div class="badge" style="background:white; color:#ef4444; font-weight:bold;">${timeLeft}s</div>
-                </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-                    <div>
-                        <div style="font-size:11px; opacity:0.8;">Demande</div>
-                        <div style="font-weight:700; font-size:18px;">${req.amount}g</div>
-                    </div>
-                    <div style="text-align:right;">
-                        <div style="font-size:11px; opacity:0.8;">Récompense</div>
-                        <div style="font-weight:700; font-size:18px; color:#fde047;">${fmtCash(req.price)}</div>
-                    </div>
-                </div>
-                <button class="btn" style="margin-top:15px; width:100%; background:white; color:#ef4444; font-weight:700; border:none;" 
-                    onclick="acceptSpecialRequest()">LIVRER MAINTENANT</button>
-            </div>
-        `;
-    } else {
-        container.style.display = 'none';
-    }
-}
-
-window.acceptSpecialRequest = function () {
-    if (!state.specialRequest?.active) return;
-    const req = state.specialRequest;
-
-    if (state.stockGrams >= req.amount) {
-        state.stockGrams -= req.amount;
-        state.cash += req.price;
-        state.specialRequest.active = false;
-
-        // Bonus XP
-        const xpGain = Math.floor(req.price / 100) + 10;
-        if (state.achievements) state.achievements.points += xpGain;
-
-        showNotification('✅ Mission Réussie', `Livraison VIP terminée : +${fmtCash(req.price)}`, 'success');
-        updateUI();
-    } else {
-        showNotification('❌ Stock Insuffisant', `Il vous manque ${Math.ceil(req.amount - state.stockGrams)}g pour cette commande.`, 'error');
-    }
-};
 
 function getTitleForLevel(level) {
     const titles = [
