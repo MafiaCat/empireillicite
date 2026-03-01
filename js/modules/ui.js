@@ -1372,7 +1372,7 @@ window.renderCaisse = function () {
                     <div style="font-size: 28px; font-weight: 800; color: #10b981; font-variant-numeric: tabular-nums;">${fmtCash(state.caisse || 0)}</div>
                 </div>
             </div>
-            <button onclick="collectCaisse(event)" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.2)'">
+            <button onclick="collectCaisse(event)" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 8px; padding: 10px 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; width: max-content; flex-shrink: 0;" onmouseover="this.style.background='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.2)'">
                 Récolter
             </button>
         </div>
