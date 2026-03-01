@@ -4371,49 +4371,42 @@ button.buy-asset-refined {
     }
 }
 
-/* Modifier class applied via JS to the card */
-.golden-shockwave-active {
-    animation: borderGlowPulse 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-    z-index: 10;
-    overflow: hidden !important;
-    /* Prevents the circle from expanding the page size and causing scrollbars */
-    position: relative;
-}
-
-/* Removed cardPop to prevent layout thrashing/scrolling when inner items expand */
-
 /* Modifer class applied via JS to the purchase button */
 .golden-pulse-btn {
+    position: relative !important;
+    /* Ensure pseudo-element positions relative to button */
     animation: goldPulse 0.4s ease-out forwards !important;
     background: linear-gradient(135deg, #fde047, #f59e0b) !important;
     color: #1e293b !important;
     border-color: transparent !important;
     box-sizing: border-box !important;
-    /* Preserves border width to prevent layout shifting vertically */
 }
 
-/* The shockwave element itself */
-.golden-shockwave-circle {
+/* The shockwave pseudo-element specifically on the button */
+.golden-pulse-btn::before {
+    content: '';
     position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    width: 200% !important;
-    /* Make it definitively larger than the card */
-    height: 200% !important;
-    aspect-ratio: 1/1;
-    /* Ensure a perfect circle, not an oval rectangle based on card size */
-    background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, rgba(251, 191, 36, 0) 70%);
-    border-radius: 50% !important;
-    /* Circle instead of inheriting the rectangle card shape */
-    transform-origin: center;
-    transform: translate(-50%, -50%) scale(0);
+    top: -4px !important;
+    left: -4px !important;
+    right: -4px !important;
+    bottom: -4px !important;
+    border: 2px solid #fde047;
+    border-radius: inherit;
+    animation: buttonShockwave 0.5s ease-out forwards;
     pointer-events: none;
-    z-index: 0 !important;
-    /* Force it behind text elements */
+    z-index: 10 !important;
 }
 
-.golden-shockwave-active .golden-shockwave-circle {
-    animation: goldShockwave 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+@keyframes buttonShockwave {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.05, 1.3);
+        opacity: 0;
+    }
 }
 
 /* Vault (Coffre-fort) block */

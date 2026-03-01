@@ -527,24 +527,20 @@ function buyBiz(id, event) {
         // --- ANIMATION INTERCEPTION ---
         if (event && event.currentTarget) {
             const btn = event.currentTarget;
-            const card = btn.closest('.business-card') || btn.closest('.invest-card');
-            if (card) {
-                // 1. Button pulse
-                btn.classList.add('golden-pulse-btn');
-                btn.innerHTML = '✨ Transaction...';
+            // 1. Button pulse & rectangle border
+            btn.classList.add('golden-pulse-btn');
+            btn.innerHTML = '✨ Transaction...';
 
-                // 2. Card shockwave via ::before pseudo-element
-                card.classList.add('golden-shockwave-active');
+            // 2. Wait for animation to finish before actual purchase
+            setTimeout(() => {
+                const scrollPos = window.scrollY; // Save current scroll position
+                executeBuyBiz(id, b, owned, cost);
+                window.scrollTo(0, scrollPos); // Restore scroll position to prevent jumping
 
-                // 3. Wait for animation to finish before actual purchase
-                setTimeout(() => {
-                    executeBuyBiz(id, b, owned, cost);
-                    // Cleanup classes so it can be re-triggered
-                    btn.classList.remove('golden-pulse-btn');
-                    card.classList.remove('golden-shockwave-active');
-                }, 600);
-                return; // Early return, purchase will happen in setTimeout
-            }
+                // Cleanup classes so it can be re-triggered
+                btn.classList.remove('golden-pulse-btn');
+            }, 500);
+            return; // Early return, purchase will happen in setTimeout
         }
 
         // Fallback for no event/no card found
@@ -592,24 +588,20 @@ function buyRealEstate(id, event) {
         // --- ANIMATION INTERCEPTION ---
         if (event && event.currentTarget) {
             const btn = event.currentTarget;
-            const card = btn.closest('.rental-card') || btn.closest('.invest-card');
-            if (card) {
-                // 1. Button pulse
-                btn.classList.add('golden-pulse-btn');
-                btn.innerHTML = '✨ Transaction...';
+            // 1. Button pulse & rectangle border
+            btn.classList.add('golden-pulse-btn');
+            btn.innerHTML = '✨ Transaction...';
 
-                // 2. Card shockwave via ::before pseudo-element
-                card.classList.add('golden-shockwave-active');
+            // 2. Wait for animation to finish before actual purchase
+            setTimeout(() => {
+                const scrollPos = window.scrollY; // Save current scroll position
+                executeBuyRealEstate(id, r, owned, cost);
+                window.scrollTo(0, scrollPos); // Restore scroll position to prevent jumping
 
-                // 3. Wait for animation to finish before actual purchase
-                setTimeout(() => {
-                    executeBuyRealEstate(id, r, owned, cost);
-                    // Cleanup classes
-                    btn.classList.remove('golden-pulse-btn');
-                    card.classList.remove('golden-shockwave-active');
-                }, 600);
-                return; // Early return, purchase will happen in setTimeout
-            }
+                // Cleanup classes
+                btn.classList.remove('golden-pulse-btn');
+            }, 500);
+            return; // Early return, purchase will happen in setTimeout
         }
 
         // Fallback for no event/no card found

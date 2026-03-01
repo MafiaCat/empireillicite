@@ -63,20 +63,21 @@ function buyAsset(id, event) {
         // --- ANIMATION INTERCEPTION ---
         if (event && event.currentTarget) {
             const btn = event.currentTarget;
-            const card = btn.closest('.car-dealership-card') || btn.closest('.art-gallery-card') || btn.closest('.jewelry-display-card') || btn.closest('.invest-card');
-            if (card) {
-                btn.classList.add('golden-pulse-btn');
-                btn.innerHTML = '✨ Transaction...';
 
-                card.classList.add('golden-shockwave-active');
+            // 1. Button pulse & rectangle border
+            btn.classList.add('golden-pulse-btn');
+            btn.innerHTML = '✨ Transaction...';
 
-                setTimeout(() => {
-                    executeBuyAsset(id, i);
-                    btn.classList.remove('golden-pulse-btn');
-                    card.classList.remove('golden-shockwave-active');
-                }, 600);
-                return;
-            }
+            // 2. Wait for animation to finish before actual purchase
+            setTimeout(() => {
+                const scrollPos = window.scrollY; // Save current scroll position
+                executeBuyAsset(id, i);
+                window.scrollTo(0, scrollPos); // Restore scroll position to prevent jumping
+
+                // Cleanup classes
+                btn.classList.remove('golden-pulse-btn');
+            }, 500);
+            return;
         }
 
         // Fallback
