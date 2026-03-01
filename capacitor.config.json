@@ -3,6 +3,8 @@
   "appName": "Empire Illicite",
   "webDir": "www",
   "server": {
+    "url": "https://empireillicite.vercel.app/",
+    "cleartext": true,
     "androidScheme": "https",
     "allowNavigation": [
       "*"

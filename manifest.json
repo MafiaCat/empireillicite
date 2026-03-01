@@ -2,7 +2,7 @@
     "name": "Empire Illicite - Idle Tycoon",
     "short_name": "Empire Illicite",
     "description": "Bâtissez votre empire dans ce jeu Idle Tycoon premium.",
-    "start_url": "Empire Illicite.html",
+    "start_url": "index.html",
     "display": "standalone",
     "background_color": "#0f172a",
     "theme_color": "#6366f1",
