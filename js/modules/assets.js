@@ -70,10 +70,7 @@ function buyAsset(id, event) {
 
             // 2. Wait for animation to finish before actual purchase
             setTimeout(() => {
-                const scrollPos = window.scrollY; // Save current scroll position
                 executeBuyAsset(id, i);
-                window.scrollTo(0, scrollPos); // Restore scroll position to prevent jumping
-
                 // Cleanup classes
                 btn.classList.remove('golden-pulse-btn');
             }, 500);
