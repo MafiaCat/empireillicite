@@ -303,6 +303,14 @@
     .quick-stats-grid {
         grid-template-columns: 1fr !important;
         gap: 16px;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .invest-card {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
     }
 
     .stats-grid {
