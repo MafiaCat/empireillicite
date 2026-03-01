@@ -26,10 +26,14 @@ function renderRentalTab() {
     let weeklyIncome = 0;
 
     purchasableAssets.forEach(asset => {
-        if (asset.type === 'rental' && state.assets[asset.id] && state.assets[asset.id].count > 0) {
-            const count = state.assets[asset.id].count || 0;
-            totalProperties += count;
-            weeklyIncome += (asset.income || 0) * count;
+        if (asset.type === 'rental') {
+            const legacyCount = (state.realEstate && state.realEstate[asset.id]) ? state.realEstate[asset.id] : 0;
+            const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+            const count = Math.max(legacyCount, modernCount);
+            if (count > 0) {
+                totalProperties += count;
+                weeklyIncome += (asset.income || 0) * count;
+            }
         }
     });
 
@@ -63,9 +67,11 @@ function renderRentalTab() {
         html += '<div class="grid two">';
 
         rentalAssets.forEach(asset => {
-            const owned = state.assets[asset.id];
-            const count = owned ? (owned.count || 0) : 0;
-            const currentPrice = owned && count > 0
+            const legacyCount = (state.realEstate && state.realEstate[asset.id]) ? state.realEstate[asset.id] : 0;
+            const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+            const count = Math.max(legacyCount, modernCount);
+
+            const currentPrice = count > 0
                 ? Math.floor(asset.price * Math.pow(1.1, count))
                 : asset.price;
             const canAfford = state.cash >= currentPrice;
@@ -123,10 +129,14 @@ function renderBusinessTab() {
     let weeklyRevenue = 0;
 
     purchasableAssets.forEach(asset => {
-        if (asset.type === 'business' && state.assets[asset.id] && state.assets[asset.id].count > 0) {
-            const count = state.assets[asset.id].count || 0;
-            totalBusinesses += count;
-            weeklyRevenue += (asset.income || 0) * count;
+        if (asset.type === 'business') {
+            const legacyCount = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
+            const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+            const count = Math.max(legacyCount, modernCount);
+            if (count > 0) {
+                totalBusinesses += count;
+                weeklyRevenue += (asset.income || 0) * count;
+            }
         }
     });
 
@@ -160,9 +170,11 @@ function renderBusinessTab() {
         html += '<div class="grid two">';
 
         businessAssets.forEach(asset => {
-            const owned = state.assets[asset.id];
-            const count = owned ? (owned.count || 0) : 0;
-            const currentPrice = owned && count > 0
+            const legacyCount = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
+            const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+            const count = Math.max(legacyCount, modernCount);
+
+            const currentPrice = count > 0
                 ? Math.floor(asset.price * Math.pow(1.2, count))
                 : asset.price;
             const canAfford = state.cash >= currentPrice;
