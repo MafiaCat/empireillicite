@@ -28,10 +28,10 @@
     body {
         display: flex;
         flex-direction: column;
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        width: 100%;
         background: #f1f5f9;
-        grid-template-columns: 1fr;
-        /* Override base grid */
     }
 
     /* ==================================================
@@ -260,8 +260,12 @@
         margin-bottom: var(--nav-height);
         height: calc(100vh - var(--header-height) - var(--nav-height));
         overflow-y: auto;
+        overflow-x: hidden;
         padding: 12px;
         display: block;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     .sidebar {
