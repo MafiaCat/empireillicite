@@ -102,7 +102,7 @@ function renderCarsTab() {
     });
 
     html += '</div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 // ============================================
@@ -204,7 +204,7 @@ function renderArtTab() {
     });
 
     html += '</div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 // ============================================
@@ -306,7 +306,7 @@ function renderJewelryTab() {
     });
 
     html += '</div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 // ============================================
@@ -415,7 +415,7 @@ function renderMyCollections() {
     });
 
     html += '</div></div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 // Expose functions globally

@@ -137,7 +137,7 @@ function renderRentalTab() {
         html += '</div>';
     }
 
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 /**
@@ -248,7 +248,7 @@ function renderBusinessTab() {
         html += '</div>';
     }
 
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 /**
@@ -392,7 +392,7 @@ function renderStockTab() {
     // Destroy ANY existing charts before wiping the DOM to prevent ghost events
     if (typeof destroyCharts === 'function') destroyCharts();
 
-    gridContainer.innerHTML = html;
+    safeSetInnerHTML(gridContainer, html);
 
     // Initialize charts after DOM is ready
     setTimeout(() => {
@@ -545,7 +545,7 @@ function renderCryptoTab() {
     });
 
     html += '</div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 
     // Initialize charts after DOM is ready
     setTimeout(() => {
@@ -606,13 +606,13 @@ function renderPropertiesTab() {
     console.log("Owned Properties found:", ownedProperties);
 
     if (ownedProperties.length === 0) {
-        container.innerHTML = `
+        safeSetInnerHTML(container, `
             <div style='text-align:center; padding:60px 20px;'>
                 <div style='font-size:64px; margin-bottom:20px; opacity:0.3;'>🏠</div>
                 <h3 style='margin:0 0 10px 0; color:var(--text); opacity:0.7;'>Aucune Propriété</h3>
                 <p style='margin:0; color:var(--muted); font-size:14px;'>Acquérez des propriétés immobilières pour les voir ici.</p>
             </div>
-        `;
+        `);
         return;
     }
 
@@ -672,7 +672,7 @@ function renderPropertiesTab() {
         `;
     });
     html += '</div></div>';
-    container.innerHTML = html;
+    safeSetInnerHTML(container, html);
 }
 
 window.renderPropertiesTab = renderPropertiesTab;
