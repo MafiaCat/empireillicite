@@ -533,21 +533,15 @@ function buyBiz(id, event) {
                 btn.classList.add('golden-pulse-btn');
                 btn.innerHTML = '✨ Transaction...';
 
-                // 2. Card shockwave & pop
+                // 2. Card shockwave via ::before pseudo-element
                 card.classList.add('golden-shockwave-active');
 
-                // 3. Inject shockwave circle
-                const circle = document.createElement('div');
-                circle.className = 'golden-shockwave-circle';
-                card.appendChild(circle);
-
-                // 4. Wait for animation to finish before actual purchase
+                // 3. Wait for animation to finish before actual purchase
                 setTimeout(() => {
                     executeBuyBiz(id, b, owned, cost);
                     // Cleanup classes so it can be re-triggered
                     btn.classList.remove('golden-pulse-btn');
                     card.classList.remove('golden-shockwave-active');
-                    if (circle.parentNode) circle.parentNode.removeChild(circle);
                 }, 600);
                 return; // Early return, purchase will happen in setTimeout
             }
@@ -604,21 +598,15 @@ function buyRealEstate(id, event) {
                 btn.classList.add('golden-pulse-btn');
                 btn.innerHTML = '✨ Transaction...';
 
-                // 2. Card shockwave & pop
+                // 2. Card shockwave via ::before pseudo-element
                 card.classList.add('golden-shockwave-active');
 
-                // 3. Inject shockwave circle
-                const circle = document.createElement('div');
-                circle.className = 'golden-shockwave-circle';
-                card.appendChild(circle);
-
-                // 4. Wait for animation to finish before actual purchase
+                // 3. Wait for animation to finish before actual purchase
                 setTimeout(() => {
                     executeBuyRealEstate(id, r, owned, cost);
                     // Cleanup classes
                     btn.classList.remove('golden-pulse-btn');
                     card.classList.remove('golden-shockwave-active');
-                    if (circle.parentNode) circle.parentNode.removeChild(circle);
                 }, 600);
                 return; // Early return, purchase will happen in setTimeout
             }

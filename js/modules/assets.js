@@ -70,15 +70,10 @@ function buyAsset(id, event) {
 
                 card.classList.add('golden-shockwave-active');
 
-                const circle = document.createElement('div');
-                circle.className = 'golden-shockwave-circle';
-                card.appendChild(circle);
-
                 setTimeout(() => {
                     executeBuyAsset(id, i);
                     btn.classList.remove('golden-pulse-btn');
                     card.classList.remove('golden-shockwave-active');
-                    if (circle.parentNode) circle.parentNode.removeChild(circle);
                 }, 600);
                 return;
             }
