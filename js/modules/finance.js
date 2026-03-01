@@ -327,53 +327,44 @@ function initCharts() {
 
     // Small delay to ensure layout is computed
     requestAnimationFrame(() => {
-        // Helper: build a vertical gradient fill on a canvas
-        function buildRevolutGradient(canvas, color) {
-            const ctx2d = canvas.getContext('2d');
-            const h = canvas.offsetHeight || 100;
-            const grad = ctx2d.createLinearGradient(0, 0, 0, h);
-            grad.addColorStop(0, color.replace(')', ', 0.35)').replace('rgb', 'rgba'));
-            grad.addColorStop(1, color.replace(')', ', 0)').replace('rgb', 'rgba'));
-            return grad;
-        }
-
-        // Determine trend color for a history array
-        function trendColor(history) {
-            if (!history || history.length < 2) return '#10b981';
-            return history[history.length - 1] >= history[0] ? '#10b981' : '#ef4444';
-        }
-
-        console.log("[Charts] Creating Revolut-style crypto charts...");
+        console.log("[Charts] Creating crypto charts...");
         // Create new crypto charts
         ['btc', 'eth', 'doge'].forEach(c => {
             const ctx = document.getElementById(c + 'Chart');
             console.log(`[Charts] Canvas for ${c}:`, !!ctx);
             if (ctx) {
-                const period = state.chartPeriods[c] || 'J';
-                const sampled = sampleData(cryptoHistory[c], period);
-                const color = trendColor(sampled);
-                const gradient = buildRevolutGradient(ctx, color === '#10b981' ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)');
+                // Revolut-style gradient fill
+                const gradCrypto = ctx.getContext('2d').createLinearGradient(0, 0, 0, ctx.clientHeight || 100);
+                gradCrypto.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
+                gradCrypto.addColorStop(1, 'rgba(16, 185, 129, 0)');
 
                 cryptoCharts[c] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: Array(sampled.length).fill(''),
+                        labels: Array(60).fill(''),
                         datasets: [{
-                            data: sampled,
-                            borderColor: color,
-                            borderWidth: 2,
+                            data: [...cryptoHistory[c]],
+                            borderColor: '#10b981',
+                            borderWidth: 2.5,
                             pointRadius: 0,
                             pointHoverRadius: 0,
                             fill: true,
-                            backgroundColor: gradient,
-                            tension: 0.4  // smooth bezier
+                            backgroundColor: gradCrypto,
+                            tension: 0.45,
+                            cubicInterpolationMode: 'monotone',
                         }]
                     },
                     options: {
-                        layout: { padding: 0 },
+                        layout: { padding: { top: 4, bottom: 2, left: 2, right: 2 } },
                         scales: {
-                            x: { display: false },
-                            y: { display: false, grid: { display: false } }
+                            x: {
+                                display: false,
+                                grid: { display: false, drawBorder: false }
+                            },
+                            y: {
+                                display: false,
+                                grid: { display: false, drawBorder: false }
+                            }
                         },
                         plugins: {
                             legend: { display: false },
@@ -381,7 +372,7 @@ function initCharts() {
                         },
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: { duration: 0 },
+                        animation: { duration: 200, easing: 'easeInOutQuart' },
                         hover: { mode: null },
                         events: []
                     }
@@ -393,31 +384,38 @@ function initCharts() {
         ['tech', 'pharma', 'energy'].forEach(s => {
             const ctx = document.getElementById(`stock${s.charAt(0).toUpperCase() + s.slice(1)}Chart`);
             if (ctx) {
-                const period = state.chartPeriods[s] || 'J';
-                const sampled = sampleData(stockHistory[s], period);
-                const color = trendColor(sampled);
-                const gradient = buildRevolutGradient(ctx, color === '#10b981' ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)');
+                // Revolut-style gradient fill
+                const gradStock = ctx.getContext('2d').createLinearGradient(0, 0, 0, ctx.clientHeight || 100);
+                gradStock.addColorStop(0, 'rgba(59, 130, 246, 0.28)');
+                gradStock.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
                 stockCharts[s] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: Array(sampled.length).fill(''),
+                        labels: Array(60).fill(''),
                         datasets: [{
-                            data: sampled,
-                            borderColor: color,
-                            borderWidth: 2,
+                            data: [...stockHistory[s]],
+                            borderColor: '#3b82f6',
+                            borderWidth: 2.5,
                             pointRadius: 0,
                             pointHoverRadius: 0,
                             fill: true,
-                            backgroundColor: gradient,
-                            tension: 0.4
+                            backgroundColor: gradStock,
+                            tension: 0.45,
+                            cubicInterpolationMode: 'monotone',
                         }]
                     },
                     options: {
-                        layout: { padding: 0 },
+                        layout: { padding: { top: 4, bottom: 2, left: 2, right: 2 } },
                         scales: {
-                            x: { display: false },
-                            y: { display: false, grid: { display: false } }
+                            x: {
+                                display: false,
+                                grid: { display: false, drawBorder: false }
+                            },
+                            y: {
+                                display: false,
+                                grid: { display: false, drawBorder: false }
+                            }
                         },
                         plugins: {
                             legend: { display: false },
@@ -425,7 +423,7 @@ function initCharts() {
                         },
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: { duration: 0 },
+                        animation: { duration: 200, easing: 'easeInOutQuart' },
                         hover: { mode: null },
                         events: []
                     }
@@ -456,34 +454,15 @@ function sampleData(arr, mode) {
 }
 
 function updateCharts() {
-    // Revolut style: update gradient and trend color on every redraw
-    function trendColor(history) {
-        if (!history || history.length < 2) return '#10b981';
-        return history[history.length - 1] >= history[0] ? '#10b981' : '#ef4444';
-    }
-
-    function refreshGradient(canvas, color) {
-        const ctx2d = canvas.getContext('2d');
-        const h = canvas.offsetHeight || 100;
-        const rgb = color === '#10b981' ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)';
-        const grad = ctx2d.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, rgb.replace(')', ', 0.35)').replace('rgb', 'rgba'));
-        grad.addColorStop(1, rgb.replace(')', ', 0)').replace('rgb', 'rgba'));
-        return grad;
-    }
-
     ['btc', 'eth', 'doge'].forEach(c => {
         const chart = cryptoCharts[c];
         if (chart && chart.canvas && document.body.contains(chart.canvas)) {
             if (chart.data && chart.data.datasets && chart.data.datasets[0]) {
                 const period = state.chartPeriods[c] || 'J';
                 const sampled = sampleData(cryptoHistory[c], period);
-                const color = trendColor(sampled);
 
                 chart.data.labels = Array(sampled.length).fill('');
                 chart.data.datasets[0].data = sampled;
-                chart.data.datasets[0].borderColor = color;
-                chart.data.datasets[0].backgroundColor = refreshGradient(chart.canvas, color);
                 try { chart.update({ duration: 0 }); } catch (e) { console.warn('Chart update ignored', e); }
             }
         }
@@ -494,12 +473,9 @@ function updateCharts() {
             if (chart.data && chart.data.datasets && chart.data.datasets[0]) {
                 const period = state.chartPeriods[s] || 'J';
                 const sampled = sampleData(stockHistory[s], period);
-                const color = trendColor(sampled);
 
                 chart.data.labels = Array(sampled.length).fill('');
                 chart.data.datasets[0].data = sampled;
-                chart.data.datasets[0].borderColor = color;
-                chart.data.datasets[0].backgroundColor = refreshGradient(chart.canvas, color);
                 try { chart.update({ duration: 0 }); } catch (e) { console.warn('Chart update ignored', e); }
             }
         }
