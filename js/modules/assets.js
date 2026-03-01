@@ -55,25 +55,58 @@ function renderLuxury() {
     */
 }
 
-function buyAsset(id) {
-    // Redirect to new system if possible, or keep legacy for non-migrated items
-    // For now, we disable legacy buy to prevent confusion
-    console.log("Legacy buyAsset called for:", id);
-
-    // If we want to keep it working for verification:
-    if (typeof LUXURY === 'undefined') return;
-    const i = LUXURY.find(x => x.id === id);
+function buyAsset(id, event) {
+    if (typeof purchasableAssets === 'undefined') return;
+    const i = purchasableAssets.find(x => x.id === id);
 
     if (i && state.cash >= i.price) {
-        state.cash -= i.price;
-        if (!state.assets) state.assets = {};
-        state.assets[id] = (state.assets[id] || 0) + 1;
+        // --- ANIMATION INTERCEPTION ---
+        if (event && event.currentTarget) {
+            const btn = event.currentTarget;
+            const card = btn.closest('.car-dealership-card') || btn.closest('.art-gallery-card') || btn.closest('.jewelry-display-card') || btn.closest('.invest-card');
+            if (card) {
+                btn.classList.add('golden-pulse-btn');
+                btn.innerHTML = '✨ Transaction...';
 
-        showNotification("Luxe", `Nouvelle acquisition : ${i.name}`, "diamond");
-        // Don't call renderLuxury() which clears the DOM
-        if (typeof updateUI === 'function') updateUI();
-        if (typeof renderMyCollections === 'function') renderMyCollections(); // Refresh new UI
+                card.classList.add('golden-shockwave-active');
+
+                const circle = document.createElement('div');
+                circle.className = 'golden-shockwave-circle';
+                card.appendChild(circle);
+
+                setTimeout(() => {
+                    executeBuyAsset(id, i);
+                    btn.classList.remove('golden-pulse-btn');
+                    card.classList.remove('golden-shockwave-active');
+                    if (circle.parentNode) circle.parentNode.removeChild(circle);
+                }, 600);
+                return;
+            }
+        }
+
+        // Fallback
+        executeBuyAsset(id, i);
+    } else {
+        showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
+}
+
+function executeBuyAsset(id, i) {
+    state.cash -= i.price;
+    if (!state.assets) state.assets = {};
+    if (!state.assets[id]) state.assets[id] = { owned: false, count: 0 };
+
+    // Most collections are unique, but we increment count just in case
+    state.assets[id].count = (state.assets[id].count || 0) + 1;
+    state.assets[id].owned = true;
+
+    showNotification("Collection", `Nouvelle acquisition : ${i.name}`, "diamond");
+
+    if (typeof updateUI === 'function') updateUI();
+    if (typeof renderMyCollections === 'function') renderMyCollections();
+    if (i.type === 'car' && typeof renderCarsTab === 'function') renderCarsTab();
+    if (i.type === 'art' && typeof renderArtTab === 'function') renderArtTab();
+    if (i.type === 'jewelry' && typeof renderJewelryTab === 'function') renderJewelryTab();
 }
 
 // Expose globally

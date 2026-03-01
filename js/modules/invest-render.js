@@ -124,7 +124,7 @@ function renderRentalTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyRealEstate('${asset.id}', this)"
+                        onclick="buyRealEstate('${asset.id}', event)"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -235,7 +235,7 @@ function renderBusinessTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyBiz('${asset.id}', this)"
+                        onclick="buyBiz('${asset.id}')"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >

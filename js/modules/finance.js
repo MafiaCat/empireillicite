@@ -508,7 +508,7 @@ function buyWeapon() {
     } else showNotification('❌ Erreur', `Prix: $${fmtCash(price)}`, 'error');
 }
 
-function buyBiz(id, btnElement) {
+function buyBiz(id, event) {
     const b = purchasableAssets.find(x => x.id === id);
     if (!b) return;
 
@@ -520,42 +520,66 @@ function buyBiz(id, btnElement) {
     if (!state.assets[id]) state.assets[id] = { owned: false, count: 0 };
     const ownedModern = state.assets[id].count || 0;
 
-    // Use the maximum finding to stay in sync or trust one source?
-    // Let's rely on the calculation logic present in the function
     const owned = Math.max(ownedLegacy, ownedModern);
-
     const cost = Math.floor(b.price * Math.pow(1.15, owned));
 
     if (state.cash >= cost) {
-        state.cash -= cost;
+        // --- ANIMATION INTERCEPTION ---
+        if (event && event.currentTarget) {
+            const btn = event.currentTarget;
+            const card = btn.closest('.business-card') || btn.closest('.invest-card');
+            if (card) {
+                // 1. Button pulse
+                btn.classList.add('golden-pulse-btn');
+                btn.innerHTML = '✨ Transaction...';
 
-        // Update Legacy
-        if (!state.businesses) state.businesses = {};
-        state.businesses[id] = owned + 1;
+                // 2. Card shockwave & pop
+                card.classList.add('golden-shockwave-active');
 
-        // Update Modern
-        if (!state.assets[id]) state.assets[id] = {};
-        state.assets[id].count = owned + 1;
-        state.assets[id].owned = true;
+                // 3. Inject shockwave circle
+                const circle = document.createElement('div');
+                circle.className = 'golden-shockwave-circle';
+                card.appendChild(circle);
 
-        showNotification("Business", b.name, "success");
-        if (typeof playPurchaseAnimation === 'function' && btnElement) {
-            playPurchaseAnimation(btnElement);
+                // 4. Wait for animation to finish before actual purchase
+                setTimeout(() => {
+                    executeBuyBiz(id, b, owned, cost);
+                    // Cleanup classes so it can be re-triggered
+                    btn.classList.remove('golden-pulse-btn');
+                    card.classList.remove('golden-shockwave-active');
+                    if (circle.parentNode) circle.parentNode.removeChild(circle);
+                }, 600);
+                return; // Early return, purchase will happen in setTimeout
+            }
         }
 
-        // Slight delay for the UI update so the animation can play on the existing button
-        setTimeout(() => {
-            if (typeof renderFinanceOld === 'function') renderFinanceOld();
-            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-            if (typeof renderBusinessTab === 'function') renderBusinessTab();
-            updateUI();
-        }, 300);
+        // Fallback for no event/no card found
+        executeBuyBiz(id, b, owned, cost);
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
 }
 
-function buyRealEstate(id, btnElement) {
+function executeBuyBiz(id, b, owned, cost) {
+    state.cash -= cost;
+
+    // Update Legacy
+    if (!state.businesses) state.businesses = {};
+    state.businesses[id] = owned + 1;
+
+    // Update Modern
+    if (!state.assets[id]) state.assets[id] = {};
+    state.assets[id].count = owned + 1;
+    state.assets[id].owned = true;
+
+    showNotification("Business", b.name, "success");
+    if (typeof renderFinanceOld === 'function') renderFinanceOld();
+    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+    if (typeof renderBusinessTab === 'function') renderBusinessTab();
+    updateUI();
+}
+
+function buyRealEstate(id, event) {
     const r = purchasableAssets.find(x => x.id === id);
     if (!r) return;
 
@@ -568,36 +592,62 @@ function buyRealEstate(id, btnElement) {
     const ownedModern = state.assets[id].count || 0;
 
     const owned = Math.max(ownedLegacy, ownedModern);
-
     const cost = Math.floor(r.price * Math.pow(1.1, owned)); // Formula from legacy
 
     if (state.cash >= cost) {
-        state.cash -= cost;
+        // --- ANIMATION INTERCEPTION ---
+        if (event && event.currentTarget) {
+            const btn = event.currentTarget;
+            const card = btn.closest('.rental-card') || btn.closest('.invest-card');
+            if (card) {
+                // 1. Button pulse
+                btn.classList.add('golden-pulse-btn');
+                btn.innerHTML = '✨ Transaction...';
 
-        // Update Legacy
-        if (!state.realEstate) state.realEstate = {};
-        state.realEstate[id] = owned + 1;
+                // 2. Card shockwave & pop
+                card.classList.add('golden-shockwave-active');
 
-        // Update Modern
-        if (!state.assets[id]) state.assets[id] = {};
-        state.assets[id].count = owned + 1;
-        state.assets[id].owned = true;
+                // 3. Inject shockwave circle
+                const circle = document.createElement('div');
+                circle.className = 'golden-shockwave-circle';
+                card.appendChild(circle);
 
-        showNotification("Immobilier", r.name, "success");
-        if (typeof playPurchaseAnimation === 'function' && btnElement) {
-            playPurchaseAnimation(btnElement);
+                // 4. Wait for animation to finish before actual purchase
+                setTimeout(() => {
+                    executeBuyRealEstate(id, r, owned, cost);
+                    // Cleanup classes
+                    btn.classList.remove('golden-pulse-btn');
+                    card.classList.remove('golden-shockwave-active');
+                    if (circle.parentNode) circle.parentNode.removeChild(circle);
+                }, 600);
+                return; // Early return, purchase will happen in setTimeout
+            }
         }
 
-        // Slight delay for UI update to let the animation play
-        setTimeout(() => {
-            if (typeof renderFinanceOld === 'function') renderFinanceOld();
-            if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
-            if (typeof renderRentalTab === 'function') renderRentalTab();
-            updateUI();
-        }, 300);
+        // Fallback for no event/no card found
+        executeBuyRealEstate(id, r, owned, cost);
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
     }
+}
+
+function executeBuyRealEstate(id, r, owned, cost) {
+    state.cash -= cost;
+
+    // Update Legacy
+    if (!state.realEstate) state.realEstate = {};
+    state.realEstate[id] = owned + 1;
+
+    // Update Modern
+    if (!state.assets[id]) state.assets[id] = {};
+    state.assets[id].count = owned + 1;
+    state.assets[id].owned = true;
+
+    showNotification("Immobilier", r.name, "success");
+    if (typeof renderFinanceOld === 'function') renderFinanceOld();
+    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+    if (typeof renderRentalTab === 'function') renderRentalTab();
+    updateUI();
 }
 
 function bankTransaction(action) {

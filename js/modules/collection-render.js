@@ -86,7 +86,7 @@ function renderCarsTab() {
                 ${!isOwned ? `
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyAsset('${asset.id}')"
+                        onclick="buyAsset('${asset.id}', event)"
                         style="width:100%; padding:14px; font-weight:700; font-size:14px; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -188,7 +188,7 @@ function renderArtTab() {
                 ${!isOwned ? `
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyAsset('${asset.id}')"
+                        onclick="buyAsset('${asset.id}', event)"
                         style="width:100%; padding:12px; font-weight:700; font-size:13px; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -290,7 +290,7 @@ function renderJewelryTab() {
                 ${!isOwned ? `
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyAsset('${asset.id}')"
+                        onclick="buyAsset('${asset.id}', event)"
                         style="width:100%; padding:12px; font-weight:700; font-size:13px; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
