@@ -18,9 +18,9 @@ const state = {
     lab: savedState.lab || { yieldLevel: 0, spaceLevel: 0, speedLevel: 0, qualityLevel: 0 },
     quests: savedState.quests || { date: '', list: [] },
     bank: savedState.bank || 0,
+    propertyVault: savedState.propertyVault || 0,
     boosts: savedState.boosts || { doubleYieldUntil: 0 },
     delivery: savedState.delivery || { active: false },
-    businessVault: savedState.businessVault || 0, // Passive income accumulates here
     // -------------------------
     activeBuilding: savedState.activeBuilding || {
         plants: 0,

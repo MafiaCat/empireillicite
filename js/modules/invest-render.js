@@ -7,6 +7,23 @@ console.log(">>> INVEST-RENDER.JS v4 LOADED <<<");
 // Helper function for DOM element selection - Renamed to avoid global conflict
 const elInvest = (id) => document.getElementById(id);
 
+// Shared vault collect function, exposed globally
+window.collectPropertyVault = function () {
+    const amount = Math.floor(state.propertyVault || 0);
+    if (amount <= 0) {
+        showNotification('🏦 Coffre-fort', 'Le coffre est vide !', 'info');
+        return;
+    }
+    state.cash += amount;
+    state.propertyVault = (state.propertyVault || 0) - amount;
+    showNotification('💰 Coffre récupéré', `+${fmtCash(amount)} ajouté à votre portefeuille !`, 'success');
+    updateUI();
+    // Refresh tabs if displayed
+    if (typeof renderBusinessTab === 'function') renderBusinessTab();
+    if (typeof renderRentalTab === 'function') renderRentalTab();
+    if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
+};
+
 /**
  * Render Locatif (Rental Properties) Tab
  */
@@ -54,6 +71,18 @@ function renderRentalTab() {
                     <div class="invest-stat-label">Revenu/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyIncome * 52)}</div>
                 </div>
+            </div>
+            <div class="property-vault-card">
+                <div class="property-vault-left">
+                    <span class="property-vault-icon">🏦</span>
+                    <div>
+                        <div class="property-vault-label">Coffre-fort</div>
+                        <div class="property-vault-amount" id="vaultAmountRental">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
+                    </div>
+                </div>
+                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                    💵 Récupérer
+                </button>
             </div>
         </div>
     `;
@@ -140,28 +169,8 @@ function renderBusinessTab() {
         }
     });
 
-    // Vault balance
-    const vaultAmount = state.businessVault || 0;
-
     // Portfolio Summary Card
     let html = `
-        <div id="businessVaultCard" class="business-vault-card ${vaultAmount > 0 ? '' : 'vault-empty'}">
-            <div class="vault-icon-wrapper">
-                <span class="vault-icon">🏦</span>
-            </div>
-            <div class="vault-content">
-                <div class="vault-label">Coffre-Fort des Revenus</div>
-                <div class="vault-amount" id="vaultAmountDisplay">${fmtCash(vaultAmount)}</div>
-                <div class="vault-rate">+${fmtCash(weeklyRevenue)}/semaine</div>
-            </div>
-            <button 
-                class="vault-collect-btn ${vaultAmount < 0.01 ? 'vault-collect-disabled' : ''}" 
-                onclick="claimBusinessVault()"
-                ${vaultAmount < 0.01 ? 'disabled' : ''}
-            >
-                ${vaultAmount < 0.01 ? 'En attente...' : '💰 Récupérer'}
-            </button>
-        </div>
         <div class="invest-portfolio-summary business-card">
             <h3>🏭 Portefeuille Business</h3>
             <div class="invest-portfolio-grid">
@@ -177,6 +186,18 @@ function renderBusinessTab() {
                     <div class="invest-stat-label">Projection/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyRevenue * 52)}</div>
                 </div>
+            </div>
+            <div class="property-vault-card">
+                <div class="property-vault-left">
+                    <span class="property-vault-icon">🏦</span>
+                    <div>
+                        <div class="property-vault-label">Coffre-fort</div>
+                        <div class="property-vault-amount" id="vaultAmountBusiness">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
+                    </div>
+                </div>
+                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                    💵 Récupérer
+                </button>
             </div>
         </div>
     `;
@@ -222,7 +243,7 @@ function renderBusinessTab() {
                     </div>
                     <button 
                         class="primary buy-asset-refined" 
-                        onclick="buyBiz('${asset.id}'); triggerPurchaseAnimation(this);"
+                        onclick="buyBiz('${asset.id}')"
                         style="width:100%; padding:14px; font-weight:700; ${!canAfford ? 'opacity:0.5; cursor:not-allowed;' : ''}"
                         ${!canAfford ? 'disabled' : ''}
                     >
@@ -606,7 +627,6 @@ function renderPropertiesTab() {
     const totalValue = ownedProperties.reduce((sum, p) => sum + (p.price * p.ownedCount), 0);
     const totalCount = ownedProperties.reduce((sum, p) => sum + p.ownedCount, 0);
 
-    let html = '<div style=\'padding:10px;\'>';
     html += `
         <div style='background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);'>
             <h3 style='margin:0 0 16px 0; font-size:20px; font-weight:700;'>🏠 Portfolio Immobilier</h3>
@@ -614,6 +634,18 @@ function renderPropertiesTab() {
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Propriétés</div><div style='font-size:28px; font-weight:700;'>`+ totalCount + `</div></div>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Valeur Totale</div><div style='font-size:28px; font-weight:700; color:#22c55e;'>`+ fmtCash(totalValue) + `</div></div>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Types</div><div style='font-size:28px; font-weight:700; color:#3b82f6;'>`+ ownedProperties.length + `</div></div>
+            </div>
+            <div class="property-vault-card" style="margin-top:16px;">
+                <div class="property-vault-left">
+                    <span class="property-vault-icon">🏦</span>
+                    <div>
+                        <div class="property-vault-label" style="color:rgba(255,255,255,0.7);">Coffre-fort</div>
+                        <div class="property-vault-amount" id="vaultAmountProperties" style="color:#fde047;">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
+                    </div>
+                </div>
+                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                    💵 Récupérer
+                </button>
             </div>
         </div>
     `;
@@ -648,71 +680,3 @@ function renderPropertiesTab() {
 }
 
 window.renderPropertiesTab = renderPropertiesTab;
-
-// ============================================
-// VAULT CLAIM FUNCTION
-// ============================================
-window.claimBusinessVault = function () {
-    const amount = state.businessVault || 0;
-    if (amount < 0.01) {
-        showNotification('🏦 Coffre-Fort', 'Rien à récupérer pour le moment.', 'warning');
-        return;
-    }
-    state.cash += amount;
-    state.businessVault = 0;
-
-    showNotification('💰 Revenus Récupérés', `+${fmtCash(amount)} ajouté à votre portefeuille !`, 'success');
-    updateUI();
-    if (typeof renderBusinessTab === 'function') renderBusinessTab();
-};
-
-// ============================================
-// PURCHASE ANIMATION
-// ============================================
-window.triggerPurchaseAnimation = function (buttonEl) {
-    if (!buttonEl) return;
-    const card = buttonEl.closest('.invest-card');
-    if (!card) return;
-
-    card.classList.add('purchase-flash');
-    setTimeout(() => card.classList.remove('purchase-flash'), 600);
-
-    // Spawn floating coins
-    for (let i = 0; i < 8; i++) {
-        const coin = document.createElement('span');
-        coin.textContent = '💰';
-        coin.className = 'floating-coin';
-        const x = (Math.random() - 0.5) * 160;
-        const y = -(Math.random() * 80 + 40);
-        coin.style.setProperty('--dx', x + 'px');
-        coin.style.setProperty('--dy', y + 'px');
-        coin.style.left = (Math.random() * 80 + 10) + '%';
-        document.body.appendChild(coin);
-        setTimeout(() => coin.remove(), 1000);
-    }
-};
-
-// Live vault counter update (called by updateUI every second)
-window.updateVaultDisplay = function () {
-    const el = document.getElementById('vaultAmountDisplay');
-    if (!el) return;
-    const amount = state.businessVault || 0;
-    el.textContent = fmtCash(amount);
-
-    const card = document.getElementById('businessVaultCard');
-    if (!card) return;
-    const btn = card.querySelector('.vault-collect-btn');
-    if (!btn) return;
-
-    if (amount < 0.01) {
-        btn.disabled = true;
-        btn.classList.add('vault-collect-disabled');
-        btn.textContent = 'En attente...';
-        card.classList.add('vault-empty');
-    } else {
-        btn.disabled = false;
-        btn.classList.remove('vault-collect-disabled');
-        btn.textContent = '💰 Récupérer';
-        card.classList.remove('vault-empty');
-    }
-};

@@ -16,25 +16,29 @@
             state.lastFinanceUpdate = now;
         }
 
-        // --- PASSIVE INCOME FROM ASSETS → VAULT ---
-        let totalPassiveWeekly = 0;
+        // --- PASSIVE INCOME → VAULT (accumulates, player must collect) ---
+        let totalPassive = 0;
         if (typeof purchasableAssets !== 'undefined') {
             purchasableAssets.forEach(asset => {
                 if (asset.type === 'business' || asset.type === 'rental') {
-                    const legacyCount = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
-                    const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+                    const legacyCount = asset.type === 'business'
+                        ? ((state.businesses && state.businesses[asset.id]) || 0)
+                        : ((state.realEstate && state.realEstate[asset.id]) || 0);
+                    const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) || 0;
                     const count = Math.max(legacyCount, modernCount);
-                    totalPassiveWeekly += (asset.income || 0) * count;
+                    // income is per-week (7 game days). We tick every 100ms real-time.
+                    // Let's treat 1 game week = 60 real seconds → income / (60 * 10 ticks) per tick
+                    totalPassive += (asset.income || 0) * count;
                 }
             });
         }
-
-        if (totalPassiveWeekly > 0) {
-            // Weekly income ticks every 100ms → per tick: income / (7 days * 24h * 3600s * 10 ticks/s)
-            const tickIncome = totalPassiveWeekly / (7 * 24 * 3600 * 10);
-            state.businessVault = (state.businessVault || 0) + tickIncome;
-            state.passiveIncome = totalPassiveWeekly; // For UI display
+        if (totalPassive > 0) {
+            // Accumulate in vault at rate of 1 week-income per 60 real seconds
+            const incomePerTick = totalPassive / (60 * 10);
+            state.propertyVault = (state.propertyVault || 0) + incomePerTick;
         }
+
+        // --- LOGIQUE TRANSPORT (Refactorisé) ---
 
         for (const [type, config] of Object.entries(VEHICLE_STATS)) {
             if (state.fleet[type]) {
@@ -72,6 +76,7 @@
                 }
             }
         }
+
 
         // Plantation automatique
         handleAutomaticPlanting();

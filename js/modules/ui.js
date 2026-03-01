@@ -220,6 +220,15 @@ const updateUI = function () {
     if (topDiamondEl) topDiamondEl.textContent = state.diamonds !== undefined ? state.diamonds : 0;
     // --------------------------
 
+    // --- VAULT LIVE COUNTER ---
+    const vaultFormatted = typeof fmtCash === 'function' ? fmtCash(Math.floor(state.propertyVault || 0)) : Math.floor(state.propertyVault || 0);
+    const vaultIds = ['vaultAmountBusiness', 'vaultAmountRental', 'vaultAmountProperties'];
+    vaultIds.forEach(id => {
+        const vEl = document.getElementById(id);
+        if (vEl) vEl.textContent = vaultFormatted;
+    });
+    // --------------------------
+
     // Calculate Level Progress first
     const currentPts = state.achievements?.points || 0;
     const xpInLevel = currentPts % 100;
@@ -697,7 +706,6 @@ const updateUI = function () {
 
     updateProgressBars();
     updateJobUI();
-    if (typeof updateVaultDisplay === 'function') updateVaultDisplay();
     // renderShopInventory(); // REMOVED - Handled by renderMyCollections in collection-render.js
 }
 
