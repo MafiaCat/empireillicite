@@ -649,11 +649,11 @@ function renderPropertiesTab() {
     const totalWeeklyIncome = ownedProperties.reduce((sum, p) => sum + ((p.income || 0) * p.ownedCount), 0);
     const totalDailyIncome = totalWeeklyIncome / 7;
 
-    let html = '<div style=\'padding:10px;\'>';
+    let html = '<div style="padding:10px; box-sizing:border-box; width:100%; max-width:100%;">';
     html += `
         <div style='background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);'>
             <h3 style='margin:0 0 16px 0; font-size:20px; font-weight:700;'>🏠 Portfolio Immobilier</h3>
-            <div style='display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px;'>
+            <div style='display:grid; grid-template-columns:repeat(2, 1fr); gap:12px;'>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Propriétés</div><div style='font-size:28px; font-weight:700;'>`+ totalCount + `</div></div>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Valeur Totale</div><div style='font-size:28px; font-weight:700; color:#22c55e;'>`+ fmtCash(totalValue) + `</div></div>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Revenu/Jour</div><div style='font-size:28px; font-weight:700; color:#fde047;'>`+ fmtCash(totalDailyIncome) + `</div></div>
@@ -674,7 +674,7 @@ function renderPropertiesTab() {
         </div>
     `;
 
-    html += '<div style=\'display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:20px;\'>';
+    html += '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; box-sizing:border-box; width:100%;">';
     ownedProperties.forEach(property => {
         const totalPropertyValue = property.price * property.ownedCount;
         html += `
