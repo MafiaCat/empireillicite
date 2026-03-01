@@ -1187,58 +1187,86 @@ window.useItem = function (itemId) {
 
 // --- CELEBRATION EFFECTS ---
 window.triggerConfetti = function (btn) {
-    console.log("🎊 Confetti burst triggered!");
-    const colors = ['#fde047', '#f59e0b', '#22c55e', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444'];
-    const container = document.body;
+    const colors = ['#fde047', '#f59e0b', '#22c55e', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#fb7185'];
 
-    let originX = 50;
-    let originY = 50;
+    // Calculate origin: top-center of the button
+    let originX = window.innerWidth / 2;
+    let originY = window.innerHeight / 2;
 
     if (btn && btn instanceof HTMLElement) {
         const rect = btn.getBoundingClientRect();
         originX = rect.left + rect.width / 2;
-        originY = rect.top + rect.height / 2;
-        console.log(`📍 Origin from button: ${originX}, ${originY}`, rect);
-    } else {
-        console.log(`⚠️ No button provided, using default origin: ${originX}, ${originY}`);
+        originY = rect.top; // TOP of the button
     }
 
-    for (let i = 0; i < 40; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti-particle';
+    const gravity = 0.4;
+    const particles = [];
+    const COUNT = 35;
 
-        // Randomize
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const size = Math.random() * 8 + 6; // 6-14px
-        const duration = Math.random() * 0.8 + 0.8; // 0.8-1.6s
-
-        // Random explosion direction and distance
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = Math.random() * 100 + 50;
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity - 100; // upward bias
-
-        confetti.style.cssText = `
+    for (let i = 0; i < COUNT; i++) {
+        const el = document.createElement('div');
+        const size = Math.random() * 8 + 5; // 5-13px
+        const isCircle = Math.random() > 0.5;
+        el.style.cssText = `
             position: fixed;
+            width: ${size}px;
+            height: ${size * (isCircle ? 1 : 0.5)}px;
+            background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${isCircle ? '50%' : '2px'};
+            z-index: 1000000;
+            pointer-events: none;
             top: ${originY}px;
             left: ${originX}px;
-            width: ${size}px;
-            height: ${size}px;
-            background-color: ${color};
-            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
-            z-index: 100000;
-            pointer-events: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            --tx: ${tx}px;
-            --ty: ${ty}px;
-            --rot: ${Math.random() * 360}deg;
-            animation: confetti-burst ${duration}s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
         `;
+        document.body.appendChild(el);
 
-        container.appendChild(confetti);
-
-        setTimeout(() => {
-            confetti.remove();
-        }, duration * 1000);
+        particles.push({
+            el,
+            x: originX,
+            y: originY,
+            vx: (Math.random() - 0.5) * 10,   // ±5 horizontal spread
+            vy: -(Math.random() * 8 + 4),       // upward: -4 to -12
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 12,
+            opacity: 1,
+            life: Math.random() * 80 + 60       // 60-140 frames (~1-2.3s at 60fps)
+        });
     }
+
+    let frame = 0;
+
+    function animate() {
+        let alive = false;
+
+        particles.forEach(p => {
+            if (p.life <= 0) {
+                if (p.el.parentNode) p.el.remove();
+                return;
+            }
+
+            p.vy += gravity;     // gravity accelerates downward
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.rotationSpeed;
+            p.life--;
+
+            // Fade out in the last 30 frames
+            if (p.life < 30) {
+                p.opacity = p.life / 30;
+            }
+
+            p.el.style.left = p.x + 'px';
+            p.el.style.top = p.y + 'px';
+            p.el.style.transform = `rotate(${p.rotation}deg)`;
+            p.el.style.opacity = p.opacity;
+
+            alive = true;
+        });
+
+        if (alive) {
+            requestAnimationFrame(animate);
+        }
+    }
+
+    requestAnimationFrame(animate);
 };
