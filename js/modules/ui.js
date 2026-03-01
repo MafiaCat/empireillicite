@@ -214,6 +214,10 @@ const updateUI = function () {
     // --- NEW DIAMOND UPDATE ---
     const diamondEl = document.getElementById('diamondAmount');
     if (diamondEl) diamondEl.textContent = state.diamonds !== undefined ? state.diamonds : 0;
+
+    // Top bar diamond display
+    const topDiamondEl = document.getElementById('topDiamondDisplay');
+    if (topDiamondEl) topDiamondEl.textContent = state.diamonds !== undefined ? state.diamonds : 0;
     // --------------------------
 
     // Calculate Level Progress first

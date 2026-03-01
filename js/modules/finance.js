@@ -540,6 +540,7 @@ function buyBiz(id) {
 
         showNotification("Business", b.name, "success");
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
+        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
         updateUI();
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");
@@ -576,6 +577,7 @@ function buyRealEstate(id) {
 
         showNotification("Immobilier", r.name, "success");
         if (typeof renderFinanceOld === 'function') renderFinanceOld();
+        if (typeof renderPropertiesTab === 'function') renderPropertiesTab();
         updateUI();
     } else {
         showNotification("Fonds insuffisants", "Pas assez d'argent.", "error");

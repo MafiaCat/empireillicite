@@ -530,24 +530,34 @@ function renderPropertiesTab() {
     }
 
     let ownedProperties = [];
+    const combinedAssets = {};
 
-    if (state.assets) {
-        console.log("Checking state.assets for real-estate:", Object.keys(state.assets));
-        Object.entries(state.assets).forEach(([id, data]) => {
-            const asset = purchasableAssets.find(a => a.id === id);
-            if (asset) {
-                console.log(`Found asset ${id}: type=${asset.type}, count=${data.count || data}`);
-                if (['real-estate', 'rental', 'business'].includes(asset.type)) {
-                    const count = typeof data === 'object' ? (data.count || 1) : 1;
-                    if (count > 0) {
-                        ownedProperties.push({ ...asset, ownedCount: count });
-                    }
-                }
-            } else {
-                console.log(`Asset ${id} not found in purchasableAssets`);
-            }
+    if (state.businesses) {
+        Object.entries(state.businesses).forEach(([id, count]) => {
+            combinedAssets[id] = count;
         });
     }
+    if (state.realEstate) {
+        Object.entries(state.realEstate).forEach(([id, count]) => {
+            if (!combinedAssets[id]) combinedAssets[id] = 0;
+            combinedAssets[id] = Math.max(combinedAssets[id], count);
+        });
+    }
+
+    if (state.assets) {
+        Object.entries(state.assets).forEach(([id, data]) => {
+            if (!combinedAssets[id]) combinedAssets[id] = 0;
+            const count = typeof data === 'object' ? (data.count || 1) : 1;
+            combinedAssets[id] = Math.max(combinedAssets[id], count);
+        });
+    }
+
+    Object.entries(combinedAssets).forEach(([id, count]) => {
+        const asset = purchasableAssets.find(a => a.id === id);
+        if (asset && ['real-estate', 'rental', 'business'].includes(asset.type) && count > 0) {
+            ownedProperties.push({ ...asset, ownedCount: count });
+        }
+    });
     console.log("Owned Properties found:", ownedProperties);
 
     if (ownedProperties.length === 0) {
