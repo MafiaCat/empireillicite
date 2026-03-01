@@ -4893,7 +4893,7 @@ button.buy-asset-refined {
 
 .invest-card,
 .trading-card-modern {
-    animation: slide-in-card 0.4s ease-out;
+    opacity: 1;
 }
 
 /* Responsive adjustments */
