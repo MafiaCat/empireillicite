@@ -1,0 +1,8 @@
+node_modules/
+www/
+ios/
+.DS_Store
+*.backup.html
+*.bak.html
+package-lock.json
+capacitor.config.json.bak

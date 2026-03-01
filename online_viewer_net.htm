@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Empire Illicite - Freemium Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* --- PALETTE DARK (DÉFAUT) --- */
+            --bg-body: #050505;
+            --bg-app: #0f172a;
+            --bg-card: #1e293b; 
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            
+            --border-subtle: #334155;
+            
+            /* Inputs */
+            --input-bg: #0f172a;
+            --input-border: #334155;
+            
+            /* SHAPES */
+            --radius-btn: 14px;
+            --radius-card: 16px;
+            
+            /* ANIMATIONS */
+            --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* --- PALETTE LIGHT MODE --- */
+        body.light-mode {
+            --bg-body: #e2e8f0;
+            --bg-app: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-glass: rgba(0, 0, 0, 0.05);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-subtle: #e2e8f0;
+            --input-bg: #f1f5f9;
+            --input-border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body); color: var(--text-main);
+            height: 100vh; display: flex; justify-content: center; overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        /* --- CONTENEUR TÉLÉPHONE --- */
+        #app-frame {
+            width: 100%; max-width: 414px; height: 100%;
+            background: var(--bg-app); position: relative;
+            display: flex; flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5); overflow: hidden;
+            transition: background-color 0.3s ease;
+        }
+
+        /* --- HEADER MOBILE --- */
+        .mobile-header {
+            padding: 16px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-subtle);
+            display: flex; justify-content: space-between; align-items: center; z-index: 20;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* --- NAVIGATION MOBILE (BOTTOM) --- */
+        .mobile-nav {
+            padding: 10px 10px 25px 10px; background: var(--bg-card); border-top: 1px solid var(--border-subtle);
+            display: flex; justify-content: space-between; z-index: 20;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .mobile-nav button {
+            background: transparent; box-shadow: none; color: var(--text-muted);
+            flex-direction: column; gap: 4px; font-size: 10px; padding: 5px; border-radius: 8px; width: auto; margin: 0;
+        }
+        .mobile-nav button span { font-size: 20px; display: block; margin-bottom: 2px; }
+        .mobile-nav button.active { color: var(--text-main); background: var(--bg-glass); }
+        .mobile-nav button.active span { transform: scale(1.1); transition: transform 0.2s; }
+
+        /* --- MAIN CONTENT --- */
+        main { flex: 1; padding: 20px; overflow-y: auto; scroll-behavior: smooth; }
+        main::-webkit-scrollbar { width: 0px; }
+
+        .panel { display: none; animation: fadeUp 0.3s ease-out; padding-bottom: 20px;}
+        .panel.active { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--bg-card); border-radius: var(--radius-card); padding: 20px; margin-bottom: 16px;
+            border: 1px solid var(--border-subtle); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .grid { display: grid; gap: 12px; }
+        .grid.two { grid-template-columns: 1fr 1fr; }
+        .grid.three { grid-template-columns: repeat(3, 1fr); }
+
+        /* --- TYPO --- */
+        h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+        p { margin: 0; color: var(--text-muted); line-height: 1.4; font-size: 13px; }
+        .big-number { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -1px; }
+
+        /* --- BOUTONS --- */
+        button {
+            padding: 14px 22px; border-radius: var(--radius-btn); border: none;
+            font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
+            cursor: pointer; transition: all 0.25s ease; width: 100%;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 8px; position: relative; overflow: hidden;
+        }
+        button:active { transform: scale(0.96); }
+
+        .btn-premium-primary { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; box-shadow: 0 8px 20px rgba(34,197,94,0.25); }
+        .btn-premium-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(34,197,94,0.4); }
+
+        .btn-premium-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; box-shadow: 0 8px 20px rgba(239,68,68,0.25); }
+        .btn-premium-danger:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(239,68,68,0.4); }
+
+        .btn-premium-dark { background: linear-gradient(135deg, #6366f1, #4338ca); color: white; box-shadow: 0 8px 20px rgba(99,102,241,0.25); }
+        .btn-premium-dark:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(99,102,241,0.4); }
+
+        .btn-diamond { background: linear-gradient(135deg, #a855f7, #7e22ce); color: white; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3); }
+
+        .btn-disabled, button:disabled { background: var(--border-subtle) !important; color: var(--text-muted) !important; box-shadow: none !important; cursor: not-allowed; pointer-events: none; opacity: 0.7; }
+
+        /* --- UI ELEMENTS --- */
+        .progress-container { height: 8px; background: var(--bg-app); border-radius: 10px; overflow: hidden; margin: 10px 0; position: relative; }
+        .progress-fill { height: 100%; border-radius: 10px; transition: width 0.3s linear; }
+        
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .status-planting { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; animation: pulse 1s infinite; }
+        .status-growing { background: #22c55e; box-shadow: 0 0 10px #22c55e; animation: pulse 2s infinite; }
+        .status-ready { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; animation: pulse 0.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
+        .sub-nav { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .sub-nav::-webkit-scrollbar { display: none; }
+        .sub-nav-item { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 20px; font-size: 13px; color: var(--text-muted); white-space: nowrap; transition: all 0.2s; }
+        .sub-nav-item.active { background: var(--text-main); color: var(--bg-app); font-weight: 700; border-color: var(--text-main); }
+
+        .asset-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-card); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+        .invest-item-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; margin-bottom: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s; }
+        .invest-icon-box { width: 54px; height: 54px; background: var(--bg-glass); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); }
+        .invest-stats-pill { background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; margin-top: 10px; margin-bottom: 12px; }
+
+        input[type="number"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--input-border); background: var(--input-bg); color: var(--text-main); margin-bottom: 10px; font-family: 'Inter', sans-serif; outline: none; }
+
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .badge.red { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .badge.green { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .badge.blue { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        .badge.purple { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+        .badge.gold { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+
+        #notificationContainer { position: absolute; top: 70px; left: 20px; right: 20px; z-index: 999; pointer-events: none; display: flex; flex-direction: column; gap: 8px; }
+        .notification { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(5px); color: white; padding: 12px 16px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); font-size: 13px; border-left: 4px solid #22c55e; animation: slideIn 0.3s ease-out; pointer-events: auto; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .trend-line { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 10px; opacity: 0.5; }
+        .trend-bar { flex: 1; background: #22c55e; border-radius: 2px 2px 0 0; transition: height 0.5s ease; }
+
+        .achievement-header-card { background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 20px; padding: 24px; color: white; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); margin-bottom: 24px; position: relative; overflow: hidden; }
+        .achievement-header-card::after { content: '🏆'; position: absolute; right: -20px; top: -20px; font-size: 120px; opacity: 0.1; transform: rotate(20deg); }
+        .achievements-list-container { display: flex; flex-direction: column; gap: 16px; }
+        .achievement-card-modern { background: white; border: 2px solid; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: transform 0.2s; }
+        .achievement-card-modern.unlocked { border-color: #10b981; }
+        .achievement-card-modern.locked { border-color: #e5e7eb; background-color: #f8fafc; opacity: 0.8; }
+        .achievement-icon-modern { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; z-index: 1; }
+        .achievement-card-modern.unlocked .achievement-icon-modern { background: #10b981; color: #fbbf24; }
+        .achievement-card-modern.locked .achievement-icon-modern { background: #e2e8f0; color: #94a3b8; }
+        .achievement-content { flex-grow: 1; z-index: 1; }
+        .achievement-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .achievement-title-modern { font-weight: 700; font-size: 15px; color: #0f172a; }
+        .achievement-desc-modern { font-size: 13px; color: #059669; }
+        .achievement-card-modern.locked .achievement-desc-modern { color: #64748b; }
+
+        .urgent-request { animation: urgentPulse 2s infinite; border-left: 4px solid #ef4444; }
+        @keyframes urgentPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .iap-card { background: linear-gradient(135deg, #1e1b4b, #312e81); border: 1px solid #4f46e5; border-radius: 16px; padding: 15px; text-align: center; color: white; margin-bottom: 10px;}
+        .iap-best { position: absolute; top: 0; right: 0; background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 0 16px 0 10px; }
+
+        /* --- CHEST MODAL STYLES --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+        }
+        .chest-modal-content {
+            background: var(--bg-card); padding: 30px; border-radius: 24px;
+            border: 2px solid #a855f7; text-align: center; box-shadow: 0 0 40px rgba(168,85,247,0.4);
+            width: 90%; max-width: 320px;
+        }
+        .chest-icon-anim { font-size: 80px; margin: 20px 0; display: inline-block; filter: drop-shadow(0 0 20px rgba(251,191,36,0.6)); }
+        
+        .shake { animation: chestShake 0.4s infinite; }
+        .pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes chestShake {
+            0% { transform: translate(1px, 1px) rotate(0deg) scale(1); }
+            10% { transform: translate(-1px, -2px) rotate(-10deg) scale(1.05); }
+            20% { transform: translate(-3px, 0px) rotate(10deg) scale(1.1); }
+            30% { transform: translate(3px, 2px) rotate(0deg) scale(1.15); }
+            40% { transform: translate(1px, -1px) rotate(10deg) scale(1.15); }
+            50% { transform: translate(-1px, 2px) rotate(-10deg) scale(1.15); }
+            60% { transform: translate(-3px, 1px) rotate(0deg) scale(1.1); }
+            70% { transform: translate(3px, 1px) rotate(-10deg) scale(1.05); }
+            80% { transform: translate(-1px, -1px) rotate(10deg) scale(1); }
+            100% { transform: translate(1px, -2px) rotate(0deg) scale(1); }
+        }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="app-frame">
+        
+        <div class="mobile-header">
+            <div style="font-weight:800; font-size:16px;">⚡ EMPIRE</div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <div class="badge purple" style="font-size:14px; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="switchSubTab('plantation', 'sub-labo'); switchTab('plantation');">
+                    💎 <span id="mobileDiamonds">0</span>
+                </div>
+                <div class="big-number" style="color:#22c55e; font-size:18px;" id="mobileCash">$0</div>
+            </div>
+        </div>
+
+        <div id="notificationContainer"></div>
+
+        <main>
+            
+            <!-- 1. DASHBOARD -->
+            <section id="dashboard" class="panel active">
+                <div class="card" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <div>
+                            <p style="margin-bottom:2px; color:#94a3b8;">Rang Actuel</p>
+                            <h2 id="heroTitle" style="color:white;">Petite Frappe</h2>
+                            <p style="color:#94a3b8;">Niveau <span id="heroLevel">1</span></p>
+                        </div>
+                        <div class="badge blue" style="font-size:12px;">XP: <span id="heroXpCurrent">0</span></div>
+                    </div>
+                    <div class="progress-container" style="background:rgba(255,255,255,0.1);">
+                        <div id="heroXpFill" class="progress-fill" style="width:0%; background: #6366f1;"></div>
+                    </div>
+                </div>
+
+                <!-- COFFRES -->
+                <div class="card" id="chestCard" style="display:none; background: linear-gradient(135deg, #a855f7, #7e22ce); border:none; text-align:center;">
+                    <h3 style="color:white; margin-bottom:10px;">🎁 Coffres Disponibles : <span id="chestCountDisplay">0</span></h3>
+                    <button class="btn-premium-primary" style="background: #fbbf24; color:#0f172a; box-shadow: 0 8px 20px rgba(251,191,36,0.3);" onclick="openChest()">Ouvrir un Coffre</button>
+                </div>
+
+                <!-- QUETES QUOTIDIENNES -->
+                <div class="card">
+                    <h3 style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                        <span>📋 Contrats du Jour</span>
+                        <span style="font-size:10px; color:var(--text-muted); font-weight:normal; background:rgba(255,255,255,0.05); padding:4px 8px; border-radius:10px;">Reset: Minuit</span>
+                    </h3>
+                    <div id="questsContainer" style="display:flex; flex-direction:column; gap:8px;"></div>
+                </div>
+
+                <div class="grid three">
+                    <div class="card" style="text-align:center; padding:15px 10px;">
+                        <div style="font-size:20px; margin-bottom:5px;">📦</div>
+                        <div style="color:var(--text-muted); font-size:10px; font-weight:700;">STOCK</div>
+                        <div class="big-number" style="font-size:14px; color:#6366f1;" id="dashStock">0g</div>
+                    </div>
+                    <div class="card" style="text-align:center; padding:15px 10px;">
+                        <div style="font-size:20px; margin-bottom:5px;">⚔️</div>
+                        <div style="color:var(--text-muted); font-size:10px; font-weight:700;">FORCE</div>
+                        <div class="big-number" style="font-size:14px; color:#ef4444;" id="dashForce">0</div>
+                    </div>
+                    <div class="card" style="text-align:center; padding:15px 10px;">
+                        <div style="font-size:20px; margin-bottom:5px;">🌍</div>
+                        <div style="color:var(--text-muted); font-size:10px; font-weight:700;">ZONES</div>
+                        <div class="big-number" style="font-size:14px; color:#22c55e;" id="dashTerritories">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. PLANTATION & EMPIRE -->
+            <section id="plantation" class="panel">
+                <div class="sub-nav">
+                    <div class="sub-nav-item active" onclick="switchSubTab('plantation', 'sub-boulot')">Job</div>
+                    <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-production'); renderProduction();">Usine</div>
+                    <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-labo'); renderLabo();">🧬 Labo</div>
+                    <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-stockage'); renderStorageTab();">Stock</div>
+                    <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-territories'); renderTerritories();">Guerre</div>
+                </div>
+
+                <div id="sub-boulot" class="sub-panel">
+                    <div class="card" style="text-align:center; padding:30px 20px;">
+                        <div style="font-size:50px; margin-bottom:20px;">🍕</div>
+                        <h3>Petit Boulot</h3>
+                        <p style="margin-bottom:20px;">Livrez des pizzas pour commencer.</p>
+                        <div id="jobCooldown" style="font-weight:700; color:#22c55e; margin-bottom:15px; font-size:12px;">DISPONIBLE</div>
+                        <button id="jobBtn" class="btn-premium-dark">Travailler (+$50-150)</button>
+                    </div>
+                </div>
+
+                <div id="sub-production" class="sub-panel" style="display:none">
+                    <div id="cycleContainer"></div>
+                    <div id="staffContainer"></div>
+                    <div id="nextBuildingContainer" style="margin-top:20px;"></div>
+                </div>
+
+                <!-- LABO -->
+                <div id="sub-labo" class="sub-panel" style="display:none">
+                    <div class="card" style="background: linear-gradient(135deg, #4c1d95, #3b0764); color:white; border:none;">
+                        <h3 style="margin-bottom:5px;">🧬 Laboratoire R&D</h3>
+                        <p style="color:#c4b5fd;">Optimisez votre production ou achetez des boosts avec des diamants.</p>
+                    </div>
+
+                    <div class="card">
+                        <h4 style="margin-bottom:15px; display:flex; align-items:center; gap:8px;">🔬 Recherche (Permanent)</h4>
+                        
+                        <div class="invest-item-card" style="padding:15px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <b>Hybridation (Rendement)</b> <span class="badge blue" id="labYieldLevel">Niv. 0</span>
+                            </div>
+                            <p style="font-size:11px; margin-bottom:10px;">Chaque plante donne +10% à la récolte.</p>
+                            <button class="btn-premium-dark" style="padding:8px;" id="btnUpgradeYield" onclick="upgradeLab('yield')">Rechercher ($1,000)</button>
+                        </div>
+                        
+                        <div class="invest-item-card" style="padding:15px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <b>Pots Optimisés (Espace)</b> <span class="badge blue" id="labSpaceLevel">Niv. 0</span>
+                            </div>
+                            <p style="font-size:11px; margin-bottom:10px;">Capacité maximale de l'usine +20%.</p>
+                            <button class="btn-premium-dark" style="padding:8px;" id="btnUpgradeSpace" onclick="upgradeLab('space')">Rechercher ($2,000)</button>
+                        </div>
+                        
+                        <div class="invest-item-card" style="padding:15px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <b>Engrais Chimique (Vitesse)</b> <span class="badge blue" id="labSpeedLevel">Niv. 0</span>
+                            </div>
+                            <p style="font-size:11px; margin-bottom:10px;">Vitesse de croissance +5% par niveau.</p>
+                            <button class="btn-premium-dark" style="padding:8px;" id="btnUpgradeSpeed" onclick="upgradeLab('speed')">Rechercher</button>
+                        </div>
+
+                        <div class="invest-item-card" style="padding:15px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <b>Qualité Pure (Prix)</b> <span class="badge blue" id="labQualityLevel">Niv. 0</span>
+                            </div>
+                            <p style="font-size:11px; margin-bottom:10px;">Prix de vente sur le marché +5% par niveau.</p>
+                            <button class="btn-premium-dark" style="padding:8px;" id="btnUpgradeQuality" onclick="upgradeLab('quality')">Rechercher</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border: 1px solid #a855f7;">
+                        <h4 style="margin-bottom:15px; color:#a855f7; display:flex; align-items:center; gap:8px;">💎 Marché Noir (Boosts)</h4>
+                        <div id="activeBoostStatus" style="background:rgba(34, 197, 94, 0.1); padding:10px; border-radius:8px; border:1px solid #22c55e; margin-bottom:15px; display:none;">
+                            <b style="color:#22c55e; font-size:12px;">🔥 TERREAU PREMIUM ACTIF</b>
+                        </div>
+                        
+                        <div class="invest-item-card" style="padding:15px; border-color:rgba(168, 85, 247, 0.3);">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <div style="font-size:24px;">⚡</div>
+                                <div>
+                                    <b style="color:var(--text-main);">Engrais Miracle</b>
+                                    <div style="font-size:11px; color:var(--text-muted);">Termine la croissance INSTANTANÉMENT.</div>
+                                </div>
+                            </div>
+                            <button class="btn-diamond" style="padding:8px;" onclick="buyConsumable('insta_grow')">Acheter & Utiliser (💎 10)</button>
+                        </div>
+
+                        <div class="invest-item-card" style="padding:15px; border-color:rgba(168, 85, 247, 0.3);">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <div style="font-size:24px;">☢️</div>
+                                <div>
+                                    <b style="color:var(--text-main);">Terreau Radioactif</b>
+                                    <div style="font-size:11px; color:var(--text-muted);">Rendement x2 lors des récoltes pendant 30 min.</div>
+                                </div>
+                            </div>
+                            <button class="btn-diamond" style="padding:8px;" onclick="buyConsumable('double_yield')">Activer (💎 50)</button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h4 style="margin-bottom:15px;">🛒 Boutique de Diamants</h4>
+                        <div class="iap-card" onclick="fakeIAP(100, 0.99)">
+                            <div style="font-size:24px; margin-bottom:5px;">💎</div>
+                            <div style="font-weight:800; font-size:18px;">100 Diamants</div>
+                            <div style="background:white; color:black; border-radius:20px; padding:4px; margin-top:10px; font-weight:bold;">0.99 €</div>
+                        </div>
+                        <div class="iap-card" style="position:relative;" onclick="fakeIAP(1000, 4.99)">
+                            <div class="iap-best">POPULAIRE</div>
+                            <div style="font-size:24px; margin-bottom:5px;">💎💎</div>
+                            <div style="font-weight:800; font-size:18px;">1,000 Diamants</div>
+                            <div style="background:white; color:black; border-radius:20px; padding:4px; margin-top:10px; font-weight:bold;">4.99 €</div>
+                        </div>
+                        <div class="iap-card" style="background: linear-gradient(135deg, #fbbf24, #b45309); border-color:#fbbf24; position:relative;" onclick="fakeIAP(5000, 19.99)">
+                            <div class="iap-best" style="background:black;">BEST VALUE</div>
+                            <div style="font-size:24px; margin-bottom:5px;">💎💎💎</div>
+                            <div style="font-weight:800; font-size:18px;">5,000 Diamants</div>
+                            <div style="background:white; color:black; border-radius:20px; padding:4px; margin-top:10px; font-weight:bold;">19.99 €</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sub-stockage" class="sub-panel" style="display:none">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <h4>Capacité</h4>
+                            <span class="big-number" style="color:#6366f1;"><span id="storageCurrent">0</span>/<span id="storageMax">0</span>g</span>
+                        </div>
+                        <div class="progress-container"><div id="storageBar" class="progress-fill" style="width:0%; background: #6366f1;"></div></div>
+                    </div>
+                    <div id="storageGrid" class="grid"></div>
+                </div>
+
+                <div id="sub-territories" class="sub-panel" style="display:none">
+                    <div class="card" style="border:1px solid #ef4444; background: #2a0a0a;">
+                        <h3 style="color:#f87171; margin-bottom:10px;">⚔️ Prochaine Cible</h3>
+                        <div id="warMapContainer"></div>
+                    </div>
+                    <h4 style="margin:20px 0 10px;">Mercenaires</h4>
+                    <div id="mercenaryShop" class="grid two"></div>
+                </div>
+            </section>
+
+            <!-- 3. MARCHÉ / VENTE -->
+            <section id="market" class="panel">
+                <div class="card" style="background: linear-gradient(135deg, #111827, #1f2937);">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <p style="margin-bottom:2px; font-size:11px; color:#9ca3af;">COURS DU GRAMME</p>
+                            <div class="big-number" style="font-size:28px; color:#22c55e;" id="marketPrice">$2.00</div>
+                        </div>
+                        <div class="badge green">HAUSSE</div>
+                    </div>
+                    <div class="trend-line">
+                        <div class="trend-bar" style="height:30%"></div>
+                        <div class="trend-bar" style="height:50%"></div>
+                        <div class="trend-bar" style="height:40%"></div>
+                        <div class="trend-bar" style="height:60%"></div>
+                        <div class="trend-bar" style="height:80%; background:#86efac;"></div>
+                    </div>
+                </div>
+
+                <div id="specialRequestsContainer"></div>
+
+                <div class="grid">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                            <h4>🚛 Logistique</h4>
+                            <span class="badge blue" id="vehicleName">À Pied</span>
+                        </div>
+                        <div id="deliveryStatus" style="display:none;">
+                            <p style="font-size:12px; margin-bottom:5px;">Livraison en cours...</p>
+                            <div class="progress-container"><div id="deliveryBar" class="progress-fill" style="width:0%; background:#3b82f6;"></div></div>
+                        </div>
+                        <div id="deliveryControls">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px;">
+                                <span>Stock: <b id="sellStockDisplay">0g</b></span>
+                                <span>Capacité: <b id="vehicleCap">2g</b></span>
+                            </div>
+                            <button id="deliverBtn" class="btn-premium-primary" onclick="startDelivery()">Lancer Livraison</button>
+                        </div>
+                        <div style="margin-top:15px; border-top:1px solid var(--border-subtle); padding-top:10px;">
+                            <p style="font-size:11px; margin-bottom:5px;">Améliorer Véhicule</p>
+                            <button class="btn-premium-dark" style="font-size:12px; padding:8px;" onclick="upgradeVehicle()">Acheter Suivant (<span id="nextVehicleCost">$500</span>)</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4>👥 Dealers</h4>
+                            <div class="badge purple"><span id="dealerCount">0</span> Actifs</div>
+                        </div>
+                        <p style="margin-bottom:15px; font-size:12px;">Écoulement lent & continu.</p>
+                        <div class="grid two">
+                            <button id="hireDealer" class="btn-premium-dark">Recruter ($1k)</button>
+                            <button id="marketingBtn" class="btn-premium-dark" style="background: linear-gradient(135deg, #a855f7, #7e22ce);">Corruption ($2k)</button>
+                        </div>
+                        <p id="marketingStatus" style="font-size:10px; text-align:center; margin-top:5px; color:#a855f7; display:none;">🔥 Corruption Active (Vitesse x2)</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. FINANCE -->
+            <section id="invest" class="panel">
+                <div class="card" style="background: linear-gradient(135deg, #1e3a8a, #172554);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                         <div style="display:flex; align-items:center; gap:10px;">
+                             <div style="font-size:24px;">💸</div>
+                             <div>
+                                 <h3 style="color:white;">Revenus Passifs</h3>
+                                 <p style="color:#bfdbfe; font-size:11px;">Total: <span style="font-weight:700; color:white;" id="passiveIncomeDisplay">$0/sec</span></p>
+                             </div>
+                         </div>
+                    </div>
+                </div>
+                <div class="grid">
+                    <h4 style="margin: 15px 0 0 0; color:var(--text-muted); font-size:13px; text-transform:uppercase;">🧺 Blanchiment</h4>
+                    <div id="businessList"></div>
+                    <h4 style="margin: 15px 0 0 0; color:var(--text-muted); font-size:13px; text-transform:uppercase;">🏙️ Immobilier Locatif</h4>
+                    <div id="realEstateList"></div>
+                    <h4 style="margin: 15px 0 0 0; color:var(--text-muted); font-size:13px; text-transform:uppercase;">🏦 Marchés Financiers</h4>
+                    <div class="grid two">
+                        <div class="card" style="margin-bottom:0;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <h4 style="font-size:14px;">📉 Narcoin</h4>
+                                <div class="badge purple" id="cryptoPriceDisplay">$500</div>
+                            </div>
+                            <div style="font-size:11px; margin-bottom:10px;">Possédé: <b id="cryptoOwned">0</b></div>
+                            <button class="btn-premium-dark" style="padding:8px; font-size:12px;" onclick="tradeCrypto('buy')">Acheter 1k</button>
+                            <button class="btn-premium-dark" style="padding:8px; font-size:12px;" onclick="tradeCrypto('sell')">Vendre Tout</button>
+                        </div>
+                        <div class="card" style="margin-bottom:0;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                <h4 style="font-size:14px;">🇨🇭 Suisse</h4>
+                                <div class="badge gold">1%/min</div>
+                            </div>
+                            <div style="font-size:11px; margin-bottom:10px;">Solde: <b id="bankBalanceDisplay" style="color:#fbbf24;">$0</b></div>
+                            <input type="number" id="bankAmount" placeholder="Montant" style="padding:8px; font-size:12px;">
+                            <div style="display:flex; gap:5px;">
+                                <button class="btn-premium-primary" style="padding:8px; font-size:11px;" onclick="bankTransaction('deposit')">In</button>
+                                <button class="btn-premium-danger" style="padding:8px; font-size:11px;" onclick="bankTransaction('withdraw')">Out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. ASSETS -->
+            <section id="assets" class="panel">
+                <div class="sub-nav">
+                    <div class="sub-nav-item active" onclick="switchSubTab('assets', 'sub-my-collections')">Ma Collection</div>
+                    <div class="sub-nav-item" onclick="switchSubTab('assets', 'sub-luxury')">Boutique Luxe</div>
+                </div>
+                <div id="sub-my-collections" class="sub-panel"><div id="ownedShopAssets"></div></div>
+                <div id="sub-luxury" class="sub-panel" style="display:none"><div class="grid two" id="luxuryShop"></div></div>
+            </section>
+
+             <!-- 6. SUCCÈS -->
+            <section id="profil" class="panel">
+                <div class="achievement-header-card">
+                    <div style="position:relative; z-index:2;">
+                        <h2 style="margin:0; font-size:28px;">Niveau <span id="playerLevelDisplay">1</span></h2>
+                        <p style="margin:5px 0 20px 0; opacity:0.9;">Titre: <span id="playerTitleDisplay" style="font-weight:700; color:#fbbf24;">Petite Frappe</span></p>
+                        <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;">
+                            <span>Progression</span>
+                            <span><span id="playerXPDisplay">0</span> / 100 XP</span>
+                        </div>
+                        <div style="background:rgba(0,0,0,0.2); height:10px; border-radius:5px; overflow:hidden;">
+                            <div id="playerLevelBar" style="width:0%; height:100%; background:#fbbf24; transition:width 0.5s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+                <h3 style="margin: 20px 0 15px 0; color:var(--text-main);">Liste des Succès</h3>
+                <div id="achievementsList" class="achievements-list-container"></div>
+                <div class="card" style="margin-top:30px;">
+                    <h3>Apparence & Données</h3>
+                    <button id="themeToggleBtn" class="btn-premium-dark" style="margin-top:15px;">☀️ / 🌙 Basculer le Thème</button>
+                    <div class="grid two" style="margin-top:10px;">
+                        <button id="saveBtn" class="btn-premium-dark">Sauver</button>
+                        <button id="resetBtn" class="btn-premium-danger">Reset</button>
+                    </div>
+                </div>
+                <button id="cheatBtn" class="btn-premium-dark" style="opacity:0.2; margin-top:20px;" onclick="el('cheatBtn').onclick()">[DEV] +1M$</button>
+            </section>
+
+        </main>
+
+        <nav class="mobile-nav">
+            <button onclick="switchTab('dashboard')" class="active"><span>📊</span>Stats</button>
+            <button onclick="switchTab('plantation')"><span>🌿</span>Empire</button>
+            <button onclick="switchTab('market')"><span>📈</span>Vente</button>
+            <button onclick="switchTab('invest')"><span>💸</span>Finance</button>
+            <button onclick="switchTab('assets')"><span>💎</span>Luxe</button>
+            <button onclick="switchTab('profil')"><span>🏆</span>Succès</button>
+        </nav>
+
+    </div>
+
+    <!-- MODAL COFFRE -->
+    <div id="chestModal" class="modal-overlay" style="display:none;">
+        <div class="chest-modal-content">
+            <h2 style="color:var(--text-main); margin-bottom:10px;">OUVERTURE...</h2>
+            <div id="chestIconAnim" class="chest-icon-anim">🎁</div>
+            
+            <div id="lootReveal" style="display:none; margin-top:10px;">
+                <h3 id="lootTitle" style="color:var(--text-main);">Incroyable !</h3>
+                <div id="lootDesc" class="big-number" style="font-size:26px; margin:15px 0;">+$0</div>
+                
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:20px;">
+                    <button class="btn-premium-primary" onclick="claimLoot(1, 0, false)">Récupérer</button>
+                    <button class="btn-premium-dark" style="background: linear-gradient(135deg, #0ea5e9, #2563eb);" onclick="claimLoot(2, 0, true)">📺 Pub : DOUBLER (x2)</button>
+                    <button class="btn-diamond" onclick="claimLoot(3, 5, false)">💎5 : TRIPLER (x3)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT PRINCIPAL -->
+    <script>
+        // SAFE ELEMENT SELECTOR
+        const el = id => {
+            const element = document.getElementById(id);
+            if (!element) return { style: {}, classList: { contains: () => false, add: () => {}, remove: () => {} }, textContent: '', value: '', innerHTML: '', parentElement: { parentElement: { style: {} } }, onclick: null };
+            return element;
+        };
+
+        // 1. INITIALISATION DE L'ÉTAT
+        const state = JSON.parse(localStorage.getItem('empire_save')) || {
+            cash: 100, stock: 0, seeds: 0, level: 0, xp: 0, dealers: 0, diamonds: 50,
+            army: {}, warehouses: {}, territories: [], trophies: [],
+            building: { plants: 0, status: 'empty', progress: 0, target: 0 },
+            staff: { planters: 1, growRate: 1 },
+            lab: { yieldLevel: 0, spaceLevel: 0, speedLevel: 0, qualityLevel: 0 },
+            boosts: { doubleYieldUntil: 0 },
+            vehicleLevel: 0, delivery: { active: false, endTime: 0, amount: 0, revenue: 0 },
+            specialRequest: { active: false, name: '', amount: 0, price: 0, expires: 0 },
+            assets: {}, jobCooldown: 0, marketingUntil: 0, theme: 'dark',
+            businesses: { laundry: 0, club: 0, casino: 0 },
+            realEstate: { parking: 0, studio: 0, immeuble: 0 },
+            crypto: 0, bank: 0,
+            achievements: { unlocked: [], points: 0, level: 1 },
+            chests: 0,
+            quests: { date: '', list: [] }
+        };
+
+        // Fix missing variables for old saves
+        if(state.vehicleLevel === undefined) state.vehicleLevel = 0;
+        if(!state.delivery) state.delivery = { active: false };
+        if(!state.specialRequest) state.specialRequest = { active: false };
+        if(!state.achievements) state.achievements = { unlocked: [], points: 0, level: 1 };
+        if(!state.achievements.unlocked) state.achievements.unlocked = [];
+        if(!state.businesses) state.businesses = { laundry: 0, club: 0, casino: 0 };
+        if(!state.realEstate) state.realEstate = { parking: 0, studio: 0, immeuble: 0 };
+        if(state.diamonds === undefined) state.diamonds = 50;
+        if(!state.lab) state.lab = { yieldLevel: 0, spaceLevel: 0, speedLevel: 0, qualityLevel: 0 };
+        if(state.lab.speedLevel === undefined) state.lab.speedLevel = 0;
+        if(state.lab.qualityLevel === undefined) state.lab.qualityLevel = 0;
+        if(!state.boosts) state.boosts = { doubleYieldUntil: 0 };
+        if(state.chests === undefined) state.chests = 0;
+        if(!state.quests) state.quests = { date: '', list: [] };
+
+        // 2. CONSTANTES DU JEU
+        const BUILDINGS = [
+            { name: 'Placard', cap: 10, price: 0, defense: 0, territory: null },
+            { name: 'Studio', cap: 30, price: 800, defense: 0, territory: null },
+            { name: 'Appart HLM', cap: 100, price: 3500, defense: 50, territory: 'Cité HLM' },
+            { name: 'Pavillon', cap: 500, price: 15000, defense: 250, territory: 'Quartier' },
+            { name: 'Hangar ZI', cap: 2500, price: 75000, defense: 1000, territory: 'Zone Ind.' },
+            { name: 'Labo Secret', cap: 10000, price: 500000, defense: 5000, territory: 'Frontière' }
+        ];
+        const VEHICLES = [ { name: 'À Pied', cap: 2, time: 2, price: 0 }, { name: 'Scooter', cap: 15, time: 5, price: 500 }, { name: 'Berline', cap: 50, time: 10, price: 2000 }, { name: 'Fourgon', cap: 200, time: 20, price: 10000 }, { name: 'Camion', cap: 1000, time: 45, price: 50000 }, { name: 'Avion Cargo', cap: 10000, time: 120, price: 250000 } ];
+        const MERCENARIES = [ { id: 'sbire', name: 'Sbire', force: 1, price: 500, icon: '🏏' }, { id: 'soldat', name: 'Soldat', force: 5, price: 2000, icon: '🔫' }, { id: 'veteran', name: 'Vétéran', force: 25, price: 8000, icon: '🎖️' }, { id: 'elite', name: 'Commando', force: 100, price: 50000, icon: '💀' } ];
+        const WAREHOUSES = { small: { name: 'Box', cap: 500, price: 5000, icon: '📦' }, medium: { name: 'Entrepôt', cap: 2000, price: 25000, icon: '🏭' }, large: { name: 'Hangar', cap: 10000, price: 150000, icon: '🏗️' } };
+        const BUSINESSES = [ { id: 'laundry', name: 'Lavomatic', price: 5000, income: 10, icon: '🧺' }, { id: 'club', name: 'Night Club', price: 50000, income: 150, icon: '🕺' }, { id: 'casino', name: 'Casino', price: 1000000, income: 4000, icon: '🎰' } ];
+        const REAL_ESTATE = [ { id: 'parking', name: 'Place', price: 10000, income: 5, icon: '🅿️' }, { id: 'studio', name: 'Studio', price: 100000, income: 60, icon: '🏢' }, { id: 'immeuble', name: 'Immeuble', price: 1000000, income: 700, icon: '🏙️' } ];
+        const LUXURY = [ { id: 'rolex', name: 'Rolex', price: 15000, icon: '⌚' }, { id: 'car1', name: 'Golf GTI', price: 35000, icon: '🚗' }, { id: 'car2', name: 'Lambo', price: 250000, icon: '🏎️' }, { id: 'art1', name: 'Art', price: 50000, icon: '🎨' } ];
+        const ACHIEVEMENTS = [
+            { id: 'first_cash', title: 'Premier Dollar', desc: 'Avoir $1 en poche.', condition: s => s.cash >= 1, xp: 10, category: 'Fortune' },
+            { id: 'rich', title: 'Nouveau Riche', desc: 'Avoir $10,000.', condition: s => s.cash >= 10000, xp: 100, category: 'Fortune' },
+            { id: 'millionaire', title: 'Millionnaire', desc: 'Avoir $1,000,000.', condition: s => s.cash >= 1000000, xp: 1000, category: 'Fortune' },
+            { id: 'dealer', title: 'Petit Dealer', desc: 'Avoir 1 dealer.', condition: s => s.dealers >= 1, xp: 50, category: 'Business' },
+            { id: 'boss', title: 'Le Parrain', desc: 'Atteindre le niveau 5.', condition: s => s.achievements.level >= 5, xp: 500, category: 'Influence' },
+            { id: 'investor', title: 'Investisseur', desc: 'Avoir 1 commerce.', condition: s => Object.values(s.businesses).some(v => v > 0), xp: 200, category: 'Business' },
+            { id: 'landlord', title: 'Propriétaire', desc: 'Avoir 1 bien immobilier.', condition: s => Object.values(s.realEstate || {}).some(v => v > 0), xp: 200, category: 'Business' }
+        ];
+        const QUEST_TYPES = [
+            { id: 'harvest', desc: 'Récolter {target}g', base: 100, reward: 5 }, { id: 'deliver', desc: 'Faire {target} livraisons', base: 3, reward: 5 }, { id: 'earn', desc: 'Gagner ${target}', base: 5000, reward: 10 }, { id: 'job', desc: 'Faire le job {target} fois', base: 5, reward: 5 }
+        ];
+
+        let marketPrice = 2.0; let cryptoPrice = 500;
+        const fmtCash = n => '$' + Math.floor(n).toLocaleString();
+        const fmtInt = n => Math.floor(n).toLocaleString();
+
+        function getBuildingCap() { return Math.floor(BUILDINGS[state.level].cap * (1 + (state.lab.spaceLevel * 0.2))); }
+        function getEffectiveMarketPrice() { return marketPrice * (1 + ((state.lab.qualityLevel || 0) * 0.05)); }
+
+        // 3. UI GENERALE
+        function notify(msg, type='success') {
+            const container = el('notificationContainer');
+            if (!container.appendChild) return; 
+            const div = document.createElement('div'); div.className = 'notification'; div.style.borderLeftColor = type === 'error' ? '#ef4444' : (type==='diamond' ? '#a855f7' : '#22c55e'); div.innerHTML = msg; container.appendChild(div);
+            setTimeout(() => { div.style.opacity = '0'; div.style.transform = 'translateY(-10px)'; setTimeout(() => div.remove(), 300); }, 3000);
+        }
+
+        function applyTheme() {
+            if(state.theme === 'light') { document.body.classList.add('light-mode'); el('themeToggleBtn').textContent = '🌙 Mode Sombre'; } else { document.body.classList.remove('light-mode'); el('themeToggleBtn').textContent = '☀️ Mode Clair'; }
+        }
+        el('themeToggleBtn').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); localStorage.setItem('empire_save', JSON.stringify(state)); };
+
+        function updateUI() {
+            checkDailyQuests();
+            el('mobileCash').textContent = fmtCash(state.cash); el('mobileDiamonds').textContent = state.diamonds; el('dashStock').textContent = fmtInt(state.stock) + 'g';
+            const nextLevelXP = 100 * (state.level + 1); el('heroLevel').textContent = state.level + 1; el('heroXpCurrent').textContent = Math.floor(state.xp); el('heroXpFill').style.width = Math.min(100, (state.xp / nextLevelXP) * 100) + '%'; el('heroTitle').textContent = BUILDINGS[state.level]?.name || 'Boss';
+            let force = 0; MERCENARIES.forEach(m => force += (state.army[m.id] || 0) * m.force); el('dashForce').textContent = fmtInt(force); el('dashTerritories').textContent = state.territories.length;
+            el('sellStockDisplay').textContent = fmtInt(state.stock) + 'g'; el('marketPrice').textContent = '$' + getEffectiveMarketPrice().toFixed(2); el('dealerCount').textContent = state.dealers;
+            
+            const isMarketing = Date.now() < state.marketingUntil; 
+            el('marketingStatus').style.display = isMarketing ? 'block' : 'none';
+
+            if (state.chests > 0) { el('chestCard').style.display = 'block'; el('chestCountDisplay').textContent = state.chests; } else { el('chestCard').style.display = 'none'; }
+
+            if(el('dashboard').classList.contains('active')) renderQuests();
+            if(el('sub-production').style.display !== 'none') renderProduction();
+            if(el('sub-labo').style.display !== 'none') renderLabo();
+            if(el('invest').classList.contains('active')) renderInvest();
+            if(el('profil').classList.contains('active')) renderAchievements();
+            if(el('market').classList.contains('active')) renderLogistics();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.mobile-nav button').forEach(b => b.classList.remove('active'));
+            const panel = el(tabId); if(panel.style) panel.classList.add('active');
+            const btn = document.querySelector(`.mobile-nav button[onclick*="${tabId}"]`); if(btn) btn.classList.add('active');
+            if(tabId === 'assets') renderLuxury(); if(tabId === 'invest') renderInvest(); if(tabId === 'profil') renderAchievements(); if(tabId === 'market') renderLogistics();
+        }
+        function switchSubTab(parentId, subId) {
+            const parent = el(parentId); 
+            if(parent.querySelectorAll) {
+                parent.querySelectorAll('.sub-panel').forEach(p => p.style.display = 'none');
+                const target = el(subId); if(target.style) target.style.display = 'block';
+                parent.querySelectorAll('.sub-nav-item').forEach(i => i.classList.remove('active'));
+                const trigger = parent.querySelector(`.sub-nav-item[onclick*="${subId}"]`); if(trigger) trigger.classList.add('active');
+            }
+        }
+
+        // 4. QUETES ET COFFRES
+        function checkDailyQuests() {
+            const today = new Date().toDateString();
+            if(state.quests.date !== today) {
+                state.quests.date = today; state.quests.list = [];
+                let shuffled = [...QUEST_TYPES].sort(() => 0.5 - Math.random()).slice(0, 3);
+                shuffled.forEach(q => {
+                    let mult = Math.max(1, state.level + 1);
+                    state.quests.list.push({ id: q.id, desc: q.desc.replace('{target}', fmtInt(q.base * mult)), target: q.base * mult, progress: 0, reward: q.reward, completed: false });
+                });
+            }
+        }
+        function updateQuestProgress(type, amount) {
+            if(!state.quests.list) return;
+            state.quests.list.forEach(q => { if(q.id === type && !q.completed) { q.progress += amount; if(q.progress > q.target) q.progress = q.target; } });
+        }
+        function renderQuests() {
+            const container = el('questsContainer'); if(!container || container.innerHTML === undefined) return;
+            container.innerHTML = '';
+            state.quests.list.forEach((q, index) => {
+                const isDone = q.progress >= q.target; const canClaim = isDone && !q.completed; const claimed = q.completed;
+                let btnHtml = '';
+                if(claimed) btnHtml = `<span class="badge green">Terminé</span>`;
+                else if(canClaim) btnHtml = `<button class="btn-diamond" style="margin:0; padding:6px 12px; font-size:11px; width:auto;" onclick="claimQuest(${index})">Réclamer 💎${q.reward}</button>`;
+                else btnHtml = `<span style="font-size:11px; color:var(--text-muted);">${fmtInt(q.progress)} / ${fmtInt(q.target)}</span>`;
+                const progressPct = Math.min(100, (q.progress / q.target) * 100);
+                container.innerHTML += `<div class="invest-item-card" style="padding:12px; margin-bottom:0; display:flex; flex-direction:column; gap:8px; opacity: ${claimed ? 0.6 : 1}"><div style="display:flex; justify-content:space-between; align-items:center;"><b style="font-size:12px;">${q.desc}</b>${btnHtml}</div>${!claimed ? `<div class="progress-container" style="margin:0; height:4px;"><div class="progress-fill" style="width:${progressPct}%; background:#3b82f6;"></div></div>` : ''}</div>`;
+            });
+        }
+        function claimQuest(index) {
+            const q = state.quests.list[index];
+            if(q && q.progress >= q.target && !q.completed) { q.completed = true; state.diamonds += q.reward; notify(`Quête terminée : +${q.reward} 💎`, "diamond"); updateUI(); }
+        }
+
+        // --- ANIMATION COFFRE ---
+        let pendingLoot = null;
+        function openChest() {
+            if(state.chests > 0) {
+                state.chests--;
+                const r = Math.random();
+                if(r < 0.5) {
+                    const gain = Math.floor(1000 * (state.achievements.level || 1) * (Math.random() + 0.5));
+                    pendingLoot = { type: 'cash', value: gain, icon: '💵', text: '+$' + fmtInt(gain) };
+                } else if(r < 0.8) {
+                    const diams = Math.floor(Math.random() * 10) + 5;
+                    pendingLoot = { type: 'diamond', value: diams, icon: '💎', text: '+' + diams + ' Diamants' };
+                } else {
+                    pendingLoot = { type: 'boost', value: 15, icon: '🔥', text: 'Boost x2 (15min)' };
+                }
+
+                // Show modal UI
+                el('chestModal').style.display = 'flex';
+                el('chestIconAnim').className = 'chest-icon-anim shake';
+                el('chestIconAnim').textContent = '🎁';
+                el('lootReveal').style.display = 'none';
+
+                // Reveal after 1.5s
+                setTimeout(() => {
+                    el('chestIconAnim').className = 'chest-icon-anim pop';
+                    el('chestIconAnim').textContent = pendingLoot.icon;
+                    el('lootDesc').textContent = pendingLoot.text;
+                    el('lootDesc').style.color = pendingLoot.type === 'diamond' ? '#a855f7' : (pendingLoot.type === 'cash' ? '#22c55e' : '#f97316');
+                    el('lootReveal').style.display = 'block';
+                }, 1500);
+
+                updateUI();
+            } else {
+                notify("Aucun coffre !", "error");
+            }
+        }
+
+        function claimLoot(multiplier, diamondCost, isAd) {
+            if (!pendingLoot) return;
+            if (diamondCost > 0) {
+                if (state.diamonds < diamondCost) { notify("Pas assez de diamants !", "error"); return; }
+                state.diamonds -= diamondCost;
+            }
+
+            if (isAd) {
+                notify("📺 Visionnage de la pub...", "info");
+                setTimeout(() => { applyLoot(multiplier); }, 2000);
+                el('chestModal').style.display = 'none';
+                return;
+            }
+            applyLoot(multiplier);
+        }
+
+        function applyLoot(multiplier) {
+            const finalValue = pendingLoot.value * multiplier;
+            if (pendingLoot.type === 'cash') {
+                state.cash += finalValue;
+                updateQuestProgress('earn', finalValue);
+                notify(`🎁 Gain récupéré : +$${fmtInt(finalValue)}`, "success");
+            } else if (pendingLoot.type === 'diamond') {
+                state.diamonds += finalValue;
+                notify(`🎁 Gain récupéré : +${finalValue} 💎`, "diamond");
+            } else if (pendingLoot.type === 'boost') {
+                const currentBoost = Math.max(Date.now(), state.boosts.doubleYieldUntil);
+                state.boosts.doubleYieldUntil = currentBoost + (finalValue * 60 * 1000);
+                notify(`🎁 Boost activé : Rendement x2 (${finalValue}min)`, "diamond");
+            }
+            pendingLoot = null;
+            el('chestModal').style.display = 'none';
+            updateUI();
+        }
+
+        // 5. FONCTIONS DE JEU
+        function renderLabo() {
+            const costYield = 1000 * Math.pow(2, state.lab.yieldLevel); const costSpace = 2000 * Math.pow(2, state.lab.spaceLevel); const costSpeed = 1500 * Math.pow(2.5, state.lab.speedLevel || 0); const costQuality = 3000 * Math.pow(3, state.lab.qualityLevel || 0);
+            el('labYieldLevel').textContent = 'Niv. ' + state.lab.yieldLevel; el('labSpaceLevel').textContent = 'Niv. ' + state.lab.spaceLevel; el('labSpeedLevel').textContent = 'Niv. ' + (state.lab.speedLevel || 0); el('labQualityLevel').textContent = 'Niv. ' + (state.lab.qualityLevel || 0);
+            el('btnUpgradeYield').className = state.cash >= costYield ? 'btn-premium-dark' : 'btn-disabled'; el('btnUpgradeYield').textContent = `Rechercher ($${fmtInt(costYield)})`;
+            el('btnUpgradeSpace').className = state.cash >= costSpace ? 'btn-premium-dark' : 'btn-disabled'; el('btnUpgradeSpace').textContent = `Rechercher ($${fmtInt(costSpace)})`;
+            el('btnUpgradeSpeed').className = state.cash >= costSpeed ? 'btn-premium-dark' : 'btn-disabled'; el('btnUpgradeSpeed').textContent = `Rechercher ($${fmtInt(costSpeed)})`;
+            el('btnUpgradeQuality').className = state.cash >= costQuality ? 'btn-premium-dark' : 'btn-disabled'; el('btnUpgradeQuality').textContent = `Rechercher ($${fmtInt(costQuality)})`;
+            const isDouble = Date.now() < state.boosts.doubleYieldUntil; el('activeBoostStatus').style.display = isDouble ? 'block' : 'none';
+            if(isDouble) { const mins = Math.ceil((state.boosts.doubleYieldUntil - Date.now()) / 60000); el('activeBoostStatus').innerHTML = `<b style="color:#22c55e; font-size:12px;">🔥 TERREAU PREMIUM ACTIF (${mins} min)</b>`; }
+        }
+        function upgradeLab(type) {
+            if(type === 'yield') { const cost = 1000 * Math.pow(2, state.lab.yieldLevel); if(state.cash >= cost) { state.cash -= cost; state.lab.yieldLevel++; notify("Génétique améliorée !"); } else notify("Fonds insuffisants", "error"); } 
+            else if (type === 'space') { const cost = 2000 * Math.pow(2, state.lab.spaceLevel); if(state.cash >= cost) { state.cash -= cost; state.lab.spaceLevel++; notify("Espace optimisé !"); } else notify("Fonds insuffisants", "error"); } 
+            else if (type === 'speed') { const cost = 1500 * Math.pow(2.5, state.lab.speedLevel || 0); if(state.cash >= cost) { state.cash -= cost; state.lab.speedLevel = (state.lab.speedLevel||0)+1; notify("Croissance accélérée !"); } else notify("Fonds insuffisants", "error"); } 
+            else if (type === 'quality') { const cost = 3000 * Math.pow(3, state.lab.qualityLevel || 0); if(state.cash >= cost) { state.cash -= cost; state.lab.qualityLevel = (state.lab.qualityLevel||0)+1; notify("Qualité augmentée !"); } else notify("Fonds insuffisants", "error"); }
+            renderLabo(); updateUI();
+        }
+        function buyConsumable(type) {
+            if(type === 'insta_grow') {
+                if(state.building.status !== 'growing' && state.building.status !== 'planting') { notify("L'usine doit être en production !", "error"); return; }
+                if(state.diamonds >= 10) { state.diamonds -= 10; state.building.progress = 100; state.building.status = 'ready'; notify("⚡ Pousse Instantanée !", "diamond"); renderProduction(); updateUI(); } else notify("Pas assez de diamants", "error");
+            } else if (type === 'double_yield') {
+                if(state.diamonds >= 50) { state.diamonds -= 50; state.boosts.doubleYieldUntil = Date.now() + (30 * 60 * 1000); notify("🔥 Rendement x2 pour 30min !", "diamond"); renderLabo(); updateUI(); } else notify("Pas assez de diamants", "error");
+            }
+        }
+        function fakeIAP(amount, price) { if(confirm(`Voulez-vous simuler l'achat de ${amount} Diamants pour ${price}€ ?`)) { state.diamonds += amount; notify(`Merci ! +${amount} Diamants 💎`, "diamond"); updateUI(); } }
+
+        function renderProduction() {
+            const current = BUILDINGS[state.level]; const next = BUILDINGS[state.level + 1]; const status = state.building.status; const dynamicCap = getBuildingCap();
+            let statusText = "À l'arrêt", statusColor = "var(--text-muted)", btnHtml = "", progressHtml = "";
+            if (status === 'empty') { statusText = "Vide"; const cost = 10 * (state.level + 1); btnHtml = `<button class="btn-premium-primary" onclick="startBatch(${cost})">Lancer Lot ($${cost})</button>`; progressHtml = `<div class="progress-container"><div class="progress-fill" style="width:0%"></div></div>`; } 
+            else if (status === 'planting') { statusText = `<span class="status-dot status-planting"></span> Plantation...`; statusColor = "#3b82f6"; btnHtml = `<button class="btn-disabled">Jardiniers au travail...</button>`; progressHtml = `<div class="progress-container"><div class="progress-fill" style="width:${state.building.progress}%; background:#3b82f6;"></div></div>`; } 
+            else if (status === 'growing') { statusText = `<span class="status-dot status-growing"></span> Croissance...`; statusColor = "#22c55e"; btnHtml = `<button class="btn-premium-primary" style="background: linear-gradient(135deg, #06b6d4, #0891b2); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3); margin-bottom:10px;" onclick="boostGrowth()">🚿 Arroser / Booster (+5%)</button><button class="btn-diamond" style="font-size:12px; padding:10px;" onclick="switchSubTab('plantation', 'sub-labo'); buyConsumable('insta_grow')">⚡ Insta-Grow (💎 10)</button>`; progressHtml = `<div class="progress-container"><div class="progress-fill" style="width:${state.building.progress}%; background:#22c55e;"></div></div>`; } 
+            else if (status === 'ready') { statusText = `<span class="status-dot status-ready"></span> PRÊT !`; statusColor = "#f59e0b"; const labMult = 1 + (state.lab.yieldLevel * 0.1); const isBoosted = Date.now() < state.boosts.doubleYieldUntil; const tempMult = isBoosted ? 2 : 1; const grossAmount = Math.floor(state.building.plants * labMult * tempMult); btnHtml = `<button class="btn-premium-primary" style="background: linear-gradient(135deg, #f59e0b, #b45309);" onclick="harvest()">RÉCOLTER (~${grossAmount}g)</button>`; progressHtml = `<div class="progress-container"><div class="progress-fill" style="width:100%; background:#f59e0b;"></div></div>`; }
+            el('cycleContainer').innerHTML = `<div class="card"><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><h3>🏠 ${current.name}</h3><div class="badge green">Cap: ${dynamicCap}</div></div><div style="margin-bottom:5px; font-weight:600; color:${statusColor}">${statusText}</div>${progressHtml}<div style="margin-top:20px;">${btnHtml}</div></div>`;
+            const planterCost = 500 * Math.pow(2, state.staff.planters); const growCost = 1000 * Math.pow(2, state.staff.growRate);
+            el('staffContainer').innerHTML = `<div class="grid two" style="margin-top:10px;"><div class="card" style="padding:15px;"><div style="font-size:20px;">👨‍🌾 Jardiniers</div><div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;">Niv ${state.staff.planters}</div><button class="${state.cash >= planterCost ? 'btn-premium-dark' : 'btn-disabled'}" style="padding:8px; font-size:12px;" onclick="upgradeStaff('planters')">Upgrade $${fmtInt(planterCost)}</button></div><div class="card" style="padding:15px;"><div style="font-size:20px;">💡 Lampes</div><div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;">Niv ${state.staff.growRate}</div><button class="${state.cash >= growCost ? 'btn-premium-dark' : 'btn-disabled'}" style="padding:8px; font-size:12px;" onclick="upgradeStaff('growRate')">Upgrade $${fmtInt(growCost)}</button></div></div>`;
+            if(next) { const unlocked = !next.territory || state.territories.includes(next.territory); const affordable = state.cash >= next.price; const btnClass = (unlocked && affordable) ? 'btn-premium-primary' : 'btn-disabled'; const btnText = unlocked ? `Acheter $${fmtInt(next.price)}` : `Bloqué: ${next.territory}`; el('nextBuildingContainer').innerHTML = `<div class="card" style="opacity:${unlocked ? 1 : 0.7}"><h4>🚀 Extension: ${next.name}</h4><p style="margin:5px 0 15px;">Capacité: ${next.cap} | Défense: ${next.defense}</p><button class="${btnClass}" onclick="upgradeBuilding()">${btnText}</button></div>`; } else { el('nextBuildingContainer').innerHTML = `<p style="text-align:center; color:#f59e0b;">Niveau Max atteint</p>`; }
+        }
+
+        function boostGrowth() { if(state.building.status === 'growing') { state.building.progress += 5; if(state.building.progress >= 100) { state.building.progress = 100; state.building.status = 'ready'; notify("Boost max ! Récolte prête.", 'success'); } renderProduction(); } }
+        function startBatch(cost) { if(state.cash >= cost) { state.cash -= cost; state.building.status = 'planting'; state.building.plants = 0; state.building.target = getBuildingCap(); state.building.progress = 0; notify("Plantation commencée !"); renderProduction(); updateUI(); } else notify("Pas assez de cash", "error"); }
+        function harvest() { 
+            const baseAmount = state.building.plants; const labMult = 1 + (state.lab.yieldLevel * 0.1); const isBoosted = Date.now() < state.boosts.doubleYieldUntil; const tempMult = isBoosted ? 2 : 1; const grossAmount = Math.floor(baseAmount * labMult * tempMult);
+            let maxStk = 100; Object.keys(state.warehouses).forEach(k => maxStk += state.warehouses[k]*WAREHOUSES[k].cap); const space = maxStk - state.stock; 
+            if (space <= 0) { notify("Entrepôts PLEINS !", "error"); return; } 
+            const toHarvest = Math.min(grossAmount, space); state.stock += toHarvest; state.building.plants = 0; state.building.status = 'empty'; state.xp += toHarvest / 5; updateQuestProgress('harvest', toHarvest);
+            let msg = `Récolte: ${toHarvest}g`; if (labMult > 1 || isBoosted) msg += ` (Bonus de Labo appliqué)`; notify(msg); renderProduction(); updateUI(); 
+        }
+        function upgradeStaff(type) { let cost = 0; if (type === 'planters') cost = 500 * Math.pow(2, state.staff.planters); if (type === 'growRate') cost = 1000 * Math.pow(2, state.staff.growRate); if(state.cash >= cost) { state.cash -= cost; state.staff[type]++; notify("Amélioration achetée !"); renderProduction(); updateUI(); } else notify("Pas assez d'argent", "error"); }
+        function upgradeBuilding() { const next = BUILDINGS[state.level + 1]; if(!next) return; const unlocked = !next.territory || state.territories.includes(next.territory); if(unlocked && state.cash >= next.price) { state.cash -= next.price; state.level++; state.xp += 500; state.building.status = 'empty'; state.building.plants = 0; state.building.progress = 0; notify(`🎉 Niveau sup : ${next.name}`); renderProduction(); updateUI(); } else notify("Impossible", 'error'); }
+
+        function renderLogistics() {
+            const v = VEHICLES[state.vehicleLevel]; const nextV = VEHICLES[state.vehicleLevel + 1]; el('vehicleName').textContent = v.name; el('vehicleCap').textContent = fmtInt(v.cap) + 'g';
+            if (state.delivery.active) { el('deliveryStatus').style.display = 'block'; el('deliveryControls').style.display = 'none'; const totalTime = v.time * 1000; const remaining = state.delivery.endTime - Date.now(); const progress = Math.max(0, 100 - (remaining / totalTime * 100)); el('deliveryBar').style.width = progress + '%'; } else { el('deliveryStatus').style.display = 'none'; el('deliveryControls').style.display = 'block'; }
+            if (nextV) { el('nextVehicleCost').textContent = '$' + fmtInt(nextV.price); el('nextVehicleCost').parentElement.parentElement.style.display = 'block'; } else { el('nextVehicleCost').parentElement.parentElement.style.display = 'none'; }
+            const reqDiv = el('specialRequestsContainer');
+            if (state.specialRequest.active) { const req = state.specialRequest; const timeLeft = Math.ceil((req.expires - Date.now()) / 1000); if (timeLeft <= 0) { state.specialRequest.active = false; renderLogistics(); return; } reqDiv.innerHTML = `<div class="card urgent-request"><div style="display:flex; justify-content:space-between; align-items:center;"><div><h4 style="color:#ef4444;">🚨 ${req.name}</h4><div style="font-size:12px; color:var(--text-muted);">${req.desc}</div></div><div class="badge red">${timeLeft}s</div></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><div style="font-weight:700;">Demande: ${req.amount}g</div><div style="color:#22c55e; font-weight:700;">Paye: $${fmtInt(req.price)}</div></div><button class="btn-premium-danger" style="margin-top:10px;" onclick="acceptSpecialRequest()">LIVRER MAINTENANT</button></div>`; } else { reqDiv.innerHTML = ''; }
+        }
+        function startDelivery() { const v = VEHICLES[state.vehicleLevel]; if (state.stock <= 0) { notify("Rien à livrer !", "error"); return; } const amount = Math.min(state.stock, v.cap); state.stock -= amount; state.delivery = { active: true, endTime: Date.now() + (v.time * 1000), amount: amount, revenue: amount * getEffectiveMarketPrice() }; updateQuestProgress('deliver', 1); notify(`Livraison de ${amount}g lancée (${v.time}s)`); renderLogistics(); updateUI(); }
+        function upgradeVehicle() { const nextV = VEHICLES[state.vehicleLevel + 1]; if (nextV && state.cash >= nextV.price) { state.cash -= nextV.price; state.vehicleLevel++; notify(`Véhicule acheté : ${nextV.name}`); renderLogistics(); updateUI(); } else notify("Pas assez d'argent", "error"); }
+        function acceptSpecialRequest() { const req = state.specialRequest; if (state.stock >= req.amount) { state.stock -= req.amount; state.cash += req.price; state.specialRequest.active = false; state.xp += req.price / 20; updateQuestProgress('earn', req.price); updateQuestProgress('deliver', 1); notify(`Livraison VIP réussie : +$${fmtInt(req.price)}`); renderLogistics(); updateUI(); } else { notify("Stock insuffisant pour la demande !", "error"); } }
+        function spawnSpecialRequest() { if (state.specialRequest.active) return; if (Math.random() > 0.8) { const amount = Math.floor(Math.random() * 10) + 1; const bonus = 1.5 + Math.random(); const price = Math.floor(amount * getEffectiveMarketPrice() * bonus); const names = ["Urgence Maire", "VIP Club", "Besoin Express", "Client Pressé"]; state.specialRequest = { active: true, name: names[Math.floor(Math.random() * names.length)], desc: "Paiement cash immédiat.", amount: amount, price: price, expires: Date.now() + 15000 }; if(el('market').classList.contains('active')) renderLogistics(); } }
+
+        function renderTerritories() { const mercContainer = el('mercenaryShop'); mercContainer.innerHTML = ''; MERCENARIES.forEach(m => { const owned = state.army[m.id] || 0; const canBuy = state.cash >= m.price; mercContainer.innerHTML += `<div class="asset-card"><div style="font-size:20px;">${m.icon}</div><div><b>${m.name}</b><div style="font-size:11px; color:#ef4444;">Force: ${m.force}</div></div><div style="font-size:11px;">Possédé: ${owned}</div><button class="${canBuy ? 'btn-premium-dark' : 'btn-disabled'}" style="margin:0; padding:8px;" onclick="buyMerc('${m.id}')">$${fmtInt(m.price)}</button></div>`; }); const nextB = BUILDINGS[state.level + 1]; const warDiv = el('warMapContainer'); if(nextB && nextB.territory && !state.territories.includes(nextB.territory)) { let myForce = 0; MERCENARIES.forEach(m => myForce += (state.army[m.id] || 0) * m.force); const winChance = Math.min(100, Math.floor((myForce / nextB.defense) * 100)); warDiv.innerHTML = `<div style="text-align:center; padding:10px;"><h4 style="margin-bottom:5px;">${nextB.territory}</h4><p style="margin-bottom:10px;">Défense: ${nextB.defense} | Vous: ${myForce}</p><p style="color:${winChance > 50 ? '#22c55e':'#ef4444'}; font-weight:bold; margin-bottom:10px;">Chance: ${winChance}%</p><button class="btn-premium-danger" onclick="attack('${nextB.territory}', ${nextB.defense})">ATTAQUER</button></div>`; } else { warDiv.innerHTML = '<p style="text-align:center;">Aucune cible.</p>'; } }
+        function buyMerc(id) { const m = MERCENARIES.find(x => x.id === id); if(state.cash >= m.price) { state.cash -= m.price; state.army[id] = (state.army[id] || 0) + 1; notify(`Recruté: ${m.name}`); renderTerritories(); updateUI(); } else notify("Pas d'argent", 'error'); }
+        function attack(name, def) { let force = 0; MERCENARIES.forEach(m => force += (state.army[m.id] || 0) * m.force); if(force >= def || Math.random() * force > Math.random() * def) { state.territories.push(name); state.xp += 1000; notify(`Victoire : ${name} !`); } else { notify("Défaite...", 'error'); } renderTerritories(); renderProduction(); updateUI(); }
+        function renderStorageTab() { let base = 100; Object.keys(state.warehouses).forEach(k => base += state.warehouses[k] * WAREHOUSES[k].cap); el('storageMax').textContent = fmtInt(base); el('storageCurrent').textContent = fmtInt(state.stock); el('storageBar').style.width = Math.min(100, (state.stock/base)*100) + '%'; const grid = el('storageGrid'); grid.innerHTML = ''; Object.entries(WAREHOUSES).forEach(([k, w]) => { const count = state.warehouses[k] || 0; const canBuy = state.cash >= w.price; grid.innerHTML += `<div class="asset-card" style="flex-direction:row; align-items:center; justify-content:space-between;"><div><b>${w.name}</b><div style="font-size:11px;">+${fmtInt(w.cap)}g</div></div><button class="${canBuy ? 'btn-premium-dark':'btn-disabled'}" style="width:auto;" onclick="buyWarehouse('${k}')">$${fmtInt(w.price)}</button></div>`; }); }
+        function buyWarehouse(k) { const w = WAREHOUSES[k]; if(state.cash >= w.price) { state.cash -= w.price; state.warehouses[k] = (state.warehouses[k]||0)+1; notify(`Acheté: ${w.name}`); renderStorageTab(); updateUI(); } else notify("Pas d'argent", 'error'); }
+        function renderLuxury() { const grid = el('luxuryShop'); const owned = el('ownedShopAssets'); grid.innerHTML = ''; owned.innerHTML = ''; LUXURY.forEach(i => { const canBuy = state.cash >= i.price; grid.innerHTML += `<div class="asset-card"><div style="font-size:24px;">${i.icon}</div><b>${i.name}</b><button class="${canBuy?'btn-premium-primary':'btn-disabled'}" onclick="buyAsset('${i.id}')">$${fmtInt(i.price)}</button></div>`; }); let has = false; Object.entries(state.assets).forEach(([id, c]) => { const item = LUXURY.find(x => x.id === id); if(item && c > 0) { has = true; owned.innerHTML += `<div class="card" style="padding:10px;">${item.icon} ${item.name} <span class="badge blue">x${c}</span></div>`; } }); if(!has) owned.innerHTML = '<p>Rien.</p>'; }
+        function buyAsset(id) { const i = LUXURY.find(x => x.id === id); if(state.cash >= i.price) { state.cash -= i.price; state.assets[id] = (state.assets[id]||0)+1; state.xp += i.price/100; notify(`Luxe: ${i.name}`); renderLuxury(); updateUI(); } else notify("Trop cher", 'error'); }
+        function renderInvest() { el('bankBalanceDisplay').textContent = fmtCash(state.bank); el('cryptoPriceDisplay').textContent = '$' + cryptoPrice.toFixed(2); el('cryptoOwned').textContent = (state.crypto || 0).toFixed(4) + ' NC'; const bars = document.querySelectorAll('#cryptoGraph .trend-bar'); bars.forEach(b => b.style.height = Math.floor(Math.random()*80 + 10) + '%'); const bizDiv = el('businessList'); bizDiv.innerHTML = ''; let totalPassive = 0; BUSINESSES.forEach(b => { const owned = state.businesses[b.id] || 0; totalPassive += owned * b.income; const cost = Math.floor(b.price * Math.pow(1.15, owned)); const canBuy = state.cash >= cost; bizDiv.innerHTML += `<div class="invest-item-card"><div style="display:flex; gap:15px; align-items:center; margin-bottom:12px;"><div class="invest-icon-box">${b.icon}</div><div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><h4 style="font-size:16px; margin:0;">${b.name}</h4><span class="badge blue">Niv. ${owned}</span></div><div class="invest-stats-pill"><span style="font-size:11px; opacity:0.7;">Unit: +$${b.income}/s</span><span style="font-weight:700; color:#22c55e;">Total: +$${fmtInt(owned * b.income)}/s</span></div></div></div><button class="${canBuy ? 'btn-premium-dark':'btn-disabled'}" style="margin:0; width:100%; justify-content:space-between; padding:12px 16px;" onclick="buyBiz('${b.id}')"><span>Investir</span><span style="opacity:0.9;">$${fmtInt(cost)}</span></button></div>`; }); const realDiv = el('realEstateList'); realDiv.innerHTML = ''; if (!state.realEstate) state.realEstate = { parking: 0, studio: 0, immeuble: 0 }; REAL_ESTATE.forEach(r => { const owned = state.realEstate[r.id] || 0; totalPassive += owned * r.income; const cost = Math.floor(r.price * Math.pow(1.1, owned)); const canBuy = state.cash >= cost; realDiv.innerHTML += `<div class="invest-item-card"><div style="display:flex; gap:15px; align-items:center; margin-bottom:12px;"><div class="invest-icon-box">${r.icon}</div><div style="flex:1;"><div style="display:flex; justify-content:space-between; align-items:center;"><h4 style="font-size:16px; margin:0;">${r.name}</h4><span class="badge green">x${owned}</span></div><div class="invest-stats-pill"><span style="font-size:11px; opacity:0.7;">Loyer: +$${r.income}/s</span><span style="font-weight:700; color:#22c55e;">Total: +$${fmtInt(owned * r.income)}/s</span></div></div></div><button class="${canBuy ? 'btn-premium-dark':'btn-disabled'}" style="margin:0; width:100%; justify-content:space-between; padding:12px 16px;" onclick="buyRealEstate('${r.id}')"><span>Acheter</span><span style="opacity:0.9;">$${fmtInt(cost)}</span></button></div>`; }); el('passiveIncomeDisplay').textContent = `+$${fmtInt(totalPassive)}/s`; }
+        function buyBiz(id) { const b = BUSINESSES.find(x => x.id === id); const owned = state.businesses[id] || 0; const cost = Math.floor(b.price * Math.pow(1.15, owned)); if(state.cash >= cost) { state.cash -= cost; state.businesses[id] = owned + 1; notify(`Acquis: ${b.name}`); renderInvest(); updateUI(); } else notify("Fonds insuffisants", "error"); }
+        function buyRealEstate(id) { const r = REAL_ESTATE.find(x => x.id === id); if (!state.realEstate) state.realEstate = { parking: 0, studio: 0, immeuble: 0 }; const owned = state.realEstate[id] || 0; const cost = Math.floor(r.price * Math.pow(1.1, owned)); if(state.cash >= cost) { state.cash -= cost; state.realEstate[id] = owned + 1; notify(`Immobilier acquis: ${r.name}`); renderInvest(); updateUI(); } else notify("Fonds insuffisants", "error"); }
+        function tradeCrypto(action) { if(action === 'buy') { const amount = 1000; if(state.cash >= amount) { state.cash -= amount; state.crypto = (state.crypto || 0) + (amount / cryptoPrice); notify(`Acheté pour $1000 de NC`); } else notify("Pas assez de cash ($1000 min)", "error"); } else { if(state.crypto > 0) { const gain = state.crypto * cryptoPrice; state.cash += gain; state.crypto = 0; notify(`Vendu pour $${fmtInt(gain)}`); } else notify("Pas de crypto", "error"); } renderInvest(); updateUI(); }
+        function bankTransaction(action) { const val = parseFloat(el('bankAmount').value); if(!val || val <= 0) return; if(action === 'deposit') { if(state.cash >= val) { state.cash -= val; state.bank = (state.bank || 0) + val; notify(`Déposé: $${fmtInt(val)}`); } else notify("Cash insuffisant", "error"); } else { if(state.bank >= val) { state.bank -= val; state.cash += val; notify(`Retiré: $${fmtInt(val)}`); } else notify("Solde banque insuffisant", "error"); } renderInvest(); updateUI(); el('bankAmount').value = ''; }
+        function checkAchievements() { if (!state.achievements || !state.achievements.unlocked) { state.achievements = { unlocked: [], points: 0, level: 1 }; } ACHIEVEMENTS.forEach(ach => { if (!state.achievements.unlocked.includes(ach.id) && ach.condition(state)) { state.achievements.unlocked.push(ach.id); state.achievements.points += ach.xp; notify(`🏆 Succès : ${ach.title} (+${ach.xp} XP)`); } }); const newLevel = Math.floor(state.achievements.points / 100) + 1; if (newLevel > state.achievements.level) { const diff = newLevel - state.achievements.level; state.achievements.level = newLevel; state.chests += diff; notify(`⭐ NIVEAU SUPÉRIEUR : ${newLevel} ! (+${diff} Coffre🎁)`); } }
+        function renderAchievements() { const list = el('achievementsList'); if(!list || !list.innerHTML) return; list.innerHTML = ''; const currentPoints = state.achievements.points || 0; const currentLevel = state.achievements.level || 1; const pointsInLevel = currentPoints % 100; const progress = pointsInLevel; if(el('playerLevelDisplay').textContent !== undefined) el('playerLevelDisplay').textContent = currentLevel; if(el('playerTitleDisplay').textContent !== undefined) el('playerTitleDisplay').textContent = BUILDINGS[currentLevel-1]?.name || "Parrain"; if(el('playerXPDisplay').textContent !== undefined) el('playerXPDisplay').textContent = pointsInLevel; if(el('playerLevelBar').style) el('playerLevelBar').style.width = `${progress}%`; if (!state.achievements.unlocked) state.achievements.unlocked = []; ACHIEVEMENTS.forEach(ach => { const unlocked = state.achievements.unlocked.includes(ach.id); let iconChar = '🏆'; if(ach.category === 'Fortune') iconChar = '💰'; if(ach.category === 'Production') iconChar = '🌿'; if(ach.category === 'Business') iconChar = '🏢'; if(ach.category === 'Influence') iconChar = '⭐'; list.innerHTML += `<div class="achievement-card-modern ${unlocked ? 'unlocked' : 'locked'}"><div class="achievement-watermark">🏆</div><div class="achievement-icon-modern">${unlocked ? iconChar : '🔒'}</div><div class="achievement-content"><div class="achievement-title-row"><span class="achievement-title-modern">${ach.title}</span><span class="achievement-points-pill">+${ach.xp} PTS</span></div><div class="achievement-desc-modern">${unlocked ? ach.desc : 'Condition secrète ou non atteinte'}</div></div></div>`; }); }
+        
+        el('jobBtn').onclick = () => { const now = Date.now(); if(now > state.jobCooldown) { const gain = Math.floor(Math.random()*100)+50; state.cash += gain; state.jobCooldown = now + 5000; updateQuestProgress('earn', gain); updateQuestProgress('job', 1); notify(`+$${gain}`); const btn = el('jobBtn'); btn.classList.add('btn-disabled'); btn.textContent = 'Repos...'; setTimeout(() => { btn.classList.remove('btn-disabled'); btn.textContent = 'Travailler'; }, 5000); updateUI(); } };
+        el('hireDealer').onclick = () => { if(state.cash >= 1000) { state.cash -= 1000; state.dealers++; notify("Dealer +1"); updateUI(); } else notify("Besoin $1000", 'error'); };
+        el('marketingBtn').onclick = () => { const p = 2000; if(state.cash >= p) { state.cash -= p; state.marketingUntil = Date.now() + 30000; notify("Corruption active !"); updateUI(); } else notify("Besoin $2000", 'error'); };
+        el('cheatBtn').onclick = () => { state.cash += 1000000; notify("Cheat: +$1M"); updateUI(); };
+        el('saveBtn').onclick = () => { localStorage.setItem('empire_save', JSON.stringify(state)); notify("Sauvegardé"); };
+        el('resetBtn').onclick = () => { if(confirm("Sûr ?")) { localStorage.removeItem('empire_save'); location.reload(); } };
+
+        // 6. BOUCLE PRINCIPALE (NETTOYÉE)
+        let tick = 0;
+        setInterval(() => {
+            tick++;
+            
+            // PRODUCTION CYCLE
+            const b = state.building;
+            const staff = state.staff;
+            if (b.status === 'planting') {
+                const speed = 2 * staff.planters; 
+                b.plants += speed;
+                if (b.plants >= b.target) { b.plants = b.target; b.status = 'growing'; b.progress = 0; notify("Plantation terminée. Croissance...", 'info'); } 
+                else { b.progress = (b.plants / b.target) * 100; }
+            } 
+            else if (b.status === 'growing') {
+                const speed = 5 + (staff.growRate * 2) + ((state.lab.speedLevel || 0) * 5);
+                b.progress += speed / 10;
+                if (b.progress >= 100) { b.progress = 100; b.status = 'ready'; notify("Récolte prête !", 'success'); }
+            }
+
+            // LOGISTICS / DELIVERY
+            if (state.delivery.active) {
+                if (Date.now() >= state.delivery.endTime) {
+                    state.cash += state.delivery.revenue;
+                    updateQuestProgress('earn', state.delivery.revenue);
+                    state.delivery.active = false;
+                    notify(`Livraison terminée : +$${fmtInt(state.delivery.revenue)}`);
+                    if(el('market').classList.contains('active')) renderLogistics();
+                } else {
+                    if(el('market').classList.contains('active')) renderLogistics();
+                }
+            }
+
+            // SPAWN REQUESTS
+            if (tick % 5 === 0) spawnSpecialRequest();
+
+            // Dealers
+            if(state.dealers > 0 && state.stock > 0) {
+                const isBoost = Date.now() < state.marketingUntil;
+                const speed = state.dealers * 0.2 * (isBoost ? 2 : 1);
+                const sales = Math.min(state.stock, speed);
+                state.stock -= sales;
+                const earned = sales * getEffectiveMarketPrice();
+                state.cash += earned;
+                updateQuestProgress('earn', earned);
+            }
+            // Passive Income
+            if(tick % 1 === 0) {
+                let passive = 0;
+                BUSINESSES.forEach(b => { passive += (state.businesses[b.id] || 0) * b.income; });
+                if(state.realEstate) { REAL_ESTATE.forEach(r => { passive += (state.realEstate[r.id] || 0) * r.income; }); }
+                state.cash += passive;
+                updateQuestProgress('earn', passive);
+            }
+            // Bank
+            if(tick % 60 === 0 && state.bank > 0) state.bank *= 1.01;
+            // Market
+            if(tick % 5 === 0) {
+                marketPrice = Math.max(0.5, marketPrice + (Math.random() - 0.5));
+                cryptoPrice = Math.max(10, cryptoPrice + (Math.random() - 0.5) * 50);
+                if(el('invest').classList.contains('active')) renderInvest();
+            }
+            // Achievements
+            if(tick % 2 === 0) checkAchievements();
+
+            localStorage.setItem('empire_save', JSON.stringify(state));
+            updateUI();
+        }, 1000);
+
+        // INIT
+        applyTheme();
+        switchTab('dashboard');
+        updateUI();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "appId": "com.empire.illicite",
+  "appName": "Empire Illicite",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": [
+      "*"
+    ]
+  }
+}

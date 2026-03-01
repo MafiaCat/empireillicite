@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empire Illicite - Idle Tycoon</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <!-- PWA & Mobile Meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Empire Illicite">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css?v=64">
+    <link rel="stylesheet" href="css/base.css?v=64">
+    <link rel="stylesheet" href="css/layout.css?v=64">
+    <link rel="stylesheet" href="css/components.css?v=64">
+    <link rel="stylesheet" href="css/mobile.css?v=64">
+</head>
+
+<body class="light-mode">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <!-- Left: Level & Day -->
+        <div class="top-bar-side">
+            <div class="rc-chip rc-chip--stat">
+                <div class="rc-chip-stat-row">
+                    <span class="rc-chip-stat-icon">⭐</span>
+                    <span class="rc-chip-val rc-chip-val--green" id="topLevelDisplay">1</span>
+                </div>
+                <div class="rc-bar">
+                    <div id="topLevelBar" class="rc-bar-fill rc-bar-fill--green" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="rc-chip rc-chip--stat">
+                <div class="rc-chip-stat-row">
+                    <span class="rc-chip-stat-icon">📅</span>
+                    <span class="rc-chip-val rc-chip-val--blue" id="topDayDisplay">L</span>
+                </div>
+                <div class="rc-bar">
+                    <div id="topDayBar" class="rc-bar-fill rc-bar-fill--blue" style="width:0%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Cash & Diamonds -->
+        <div class="top-bar-side">
+            <div class="rc-chip rc-chip--gold">
+                <span class="rc-chip-icon">💵</span>
+                <span class="rc-chip-val" id="topCashDisplay">$0</span>
+            </div>
+            <div class="rc-chip rc-chip--purple">
+                <span class="rc-chip-icon">💎</span>
+                <span class="rc-chip-val" id="topDiamondDisplay">0</span>
+            </div>
+        </div>
+    </div>
+    <aside class="sidebar">
+        <h1>🏴‍☠️ Empire Illicite</h1>
+        <div class="nav">
+            <button class="tab" data-tab="dashboard">📊 Dashboard</button>
+            <button class="tab" data-tab="job">🍕 Petit boulot</button>
+            <button class="tab active" data-tab="plantation">🏴‍☠️ Empire</button>
+            <button class="tab" data-tab="vente">📈 Vente</button>
+            <button class="tab" data-tab="immobilier">🏰 Immobilier</button>
+            <button class="tab" data-tab="finance">📈 Finance</button>
+            <button class="tab" data-tab="assets">💎 Collection</button>
+            <button class="tab" data-tab="achievements">🏆 Succès</button>
+            <button class="tab" data-tab="profil">👤 Profil</button>
+        </div>
+        <!-- CALENDRIER SIDEBAR DÉPLACÉ EN BAS -->
+        <div id="sidebarCalendar"
+            style="background:#f1f5f9; border-radius:12px; padding:12px; margin-top:16px; border:1px solid #e2e8f0">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px">
+                <span id="sidebarDayName" style="font-weight:bold; color:var(--primary); font-size:14px">Lundi</span>
+                <span id="sidebarDayNum" style="font-size:12px; color:var(--muted)">Jour 1</span>
+            </div>
+            <div style="width:100%; height:6px; background:#e2e8f0; border-radius:3px; overflow:hidden">
+                <div id="sidebarDayProgress"
+                    style="width:0%; height:100%; background:var(--primary); transition:width 0.1s linear"></div>
+            </div>
+        </div>
+        <!-- LEVEL SIDEBAR -->
+        <div id="sidebarLevelContainer"
+            style="background:#ffffff; border-radius:12px; padding:14px; margin-top:16px; border:1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+            <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px">
+                <span style="font-size:16px; color:#6366f1; font-weight:700;">Niveau <span
+                        id="sidebarLevel">1</span></span>
+                <span style="font-size:12px; color:#94a3b8;">•</span>
+                <span id="sidebarTitle" style="font-size:13px; color:#64748b; font-weight:600;">Petite Frappe</span>
+            </div>
+            <div style="width:100%; height:6px; background:#f1f5f9; border-radius:3px; overflow:hidden;">
+                <div id="sidebarProgressBar"
+                    style="width:0%; height:100%; background:linear-gradient(90deg, #6366f1, #8b5cf6); transition:width 0.2s ease">
+                </div>
+            </div>
+        </div>
+        <div class="wallet">
+            <div class="wallet-label">Argent</div>
+            <div class="wallet-amount" id="cashDisplay">$100</div>
+
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <div class="wallet-label" style="font-size: 12px;">Diamants</div>
+                <div class="wallet-amount" id="diamondAmount" style="color: #a855f7; font-size: 28px;">0</div>
+            </div>
+        </div>
+    </aside>
+    <main>
+        <section id="dashboard" class="panel active">
+            <!-- 1. CARTE HÉROS (Dégradé bleu sombre) -->
+            <div class="card" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <div>
+                        <p style="margin-bottom:2px; color:#94a3b8; font-size:13px;">Rang Actuel</p>
+                        <h2 id="heroTitle" style="color:white; font-size: 28px; margin:0;">Placard</h2>
+                        <p style="color:#94a3b8; margin-top: 5px; font-size:13px;">Niveau <span id="heroLevel">1</span>
+                        </p>
+                    </div>
+                    <div class="badge blue" style="font-size:12px; padding:4px 8px; border-radius:6px;">XP: <span
+                            id="heroXpCurrent">0</span></div>
+                </div>
+                <!-- Barre XP -->
+                <div class="progress-container"
+                    style="background:rgba(255,255,255,0.1); height:8px; border-radius:10px; overflow:hidden;">
+                    <div id="heroXpFill" class="progress-fill"
+                        style="width:0%; height:100%; background: #6366f1; transition:width 0.3s;"></div>
+                </div>
+            </div>
+            <!-- QUICK ACTIONS: INVENTORY & LABO -->
+            <div style="display: flex; gap: 12px; margin-bottom: 15px;">
+                <!-- Inventory Square -->
+                <div class="card" onclick="openInventory()" id="dashInventoryBtn"
+                    style="flex: 1; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:18px 10px; background: linear-gradient(135deg, #1e293b, #0f172a); border:1px solid rgba(251,191,36,0.3); border-radius:16px; transition: all 0.2s; text-align:center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div style="font-size:36px; line-height:1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎒</div>
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:#f8fafc;">Inventaire</div>
+                        <div style="font-size:10px; color:rgba(255,255,255,0.45); font-weight:600; margin-top:2px;">
+                            Objets & Boosts</div>
+                    </div>
+                </div>
+
+                <!-- Laboratory Square -->
+                <div class="card" onclick="openLabo()" id="dashLaboBtn"
+                    style="flex: 1; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:18px 10px; background: linear-gradient(135deg, #312e81, #1e1b4b); border:1px solid rgba(167,139,250,0.3); border-radius:16px; transition: all 0.2s; text-align:center; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+                    <div style="font-size:36px; line-height:1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🔬</div>
+                    <div>
+                        <div style="font-size:14px; font-weight:800; color:#f8fafc;">Labo</div>
+                        <div style="font-size:10px; color:rgba(255,255,255,0.45); font-weight:600; margin-top:2px;">
+                            Améliorations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHEST ALERT CARD (Initially Hidden) -->
+            <div id="chestCard" class="card"
+                style="display:none; background: linear-gradient(135deg, #fbbf24, #d97706); color:white; animation: pulse 2s infinite; cursor:pointer; margin-bottom:15px;"
+                onclick="openChest()">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="font-size:32px;">🎁</div>
+                    <div>
+                        <h3 id="chestTitle"
+                            style="margin:0; font-size:16px; font-weight:800; text-shadow:0 1px 2px rgba(0,0,0,0.2);">
+                            Coffre Mystère !</h3>
+                        <p style="margin:0; font-size:12px; opacity:1; font-weight:600;">Cliquez pour ouvrir !</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 2. CARTE CONTRATS DU JOUR -->
+            <div class="card">
+                <h3 style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="display:flex; align-items:center; gap:8px;">📋 Contrats du Jour</span>
+                    <span style="font-size:10px; color:var(--text-muted); font-weight:normal;">Minuit auto-reset</span>
+                </h3>
+                <div id="questsContainer">
+                    <!-- Les quêtes seront injectées ici par JS -->
+                    <p class="muted" style="text-align:center;">Chargement des contrats...</p>
+                </div>
+                <!-- Quest refresh footer -->
+                <button onclick="resetDailyQuests()"
+                    style="margin:14px auto 0 auto; display:flex; align-items:center; justify-content:center; gap:6px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:6px 14px; cursor:pointer; color:#64748b; font-size:11px; font-weight:600; width:fit-content;">
+                    <span style="font-size:13px;">🔄</span>
+                    <span>Recharger les missions pour 10 💎</span>
+                </button>
+            </div>
+            <!-- 3. GRILLE DE STATS -->
+            <div class="grid three" style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px;">
+                <div class="card" style="text-align:center; padding:15px 10px; margin-bottom:0;">
+                    <div style="font-size:20px; margin-bottom:5px;">📦</div>
+                    <div style="color:var(--text-muted); font-size:10px; font-weight:700;">STOCK</div>
+                    <div id="dashStock" class="big-number" style="font-size:14px; color:#6366f1;">0g</div>
+                </div>
+                <div class="card" style="text-align:center; padding:15px 10px; margin-bottom:0;">
+                    <div style="font-size:20px; margin-bottom:5px;">👤</div>
+                    <div style="color:var(--text-muted); font-size:10px; font-weight:700;">DEALERS</div>
+                    <div id="dashDealers" class="big-number" style="font-size:14px; color:#3b82f6;">0</div>
+                </div>
+                <div class="card" style="text-align:center; padding:15px 10px; margin-bottom:0;">
+                    <div style="font-size:20px; margin-bottom:5px;">🌾</div>
+                    <div style="color:var(--text-muted); font-size:10px; font-weight:700;">GRAINES</div>
+                    <div id="dashSeeds" class="big-number" style="font-size:14px; color:#10b981;">0</div>
+                </div>
+            </div>
+            <!-- SPECIAL REQUEST DISPLAY (Dynamic) -->
+            <div id="specialRequestDisplay" style="margin-top: 20px; display: none;"></div>
+            <!-- Quick Actions Bar (Preserved) -->
+            <div id="quickActionsBar" class="quick-actions-bar" style="margin-top:20px;"></div>
+        </section>
+        <section id="job" class="panel" style="display:none!important">
+            <!-- Legacy Job Section Hidden -->
+        </section>
+        <section id="plantation" class="panel">
+            <!-- Sub Navigation -->
+            <div class="sub-nav">
+                <div class="sub-nav-item active" onclick="switchSubTab('plantation', 'sub-boulot')">Petit Boulot</div>
+                <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-production'); renderProduction();">
+                    Production</div>
+                <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-stockage'); renderStorageTab();">
+                    Stockage</div>
+                <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-vente')">Vente</div>
+                <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-territories'); renderTerritories();">
+                    Territoires</div>
+            </div>
+            <!-- SUB-TAB: BOULOT (MODERNISÉ) -->
+            <div id="sub-boulot" class="sub-panel">
+                <!-- Hero Section: Job Overview -->
+                <div class="production-hero-modern" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                    <div style="font-size:48px; margin-bottom:12px;" class="production-icon-pulse">🛵</div>
+                    <h4
+                        style="margin:0 0 8px 0; opacity:0.9; font-weight:600; font-size:14px; text-transform:uppercase; letter-spacing:1px; color:#94a3b8;">
+                        Gagne-pain quotidien</h4>
+                    <div
+                        style="font-size:32px; font-weight:800; margin-bottom:10px; font-family: 'Inter', sans-serif; color:white;">
+                        Livraison de Pizza
+                    </div>
+                    <div style="font-size:14px; color:#94a3b8; max-width:400px; margin:0 auto 20px auto;">
+                        Livrez des pizzas chaudes pour gagner du cash facile. Un job honnête pour couvrir vos activités
+                        illicites.
+                    </div>
+
+                    <!-- Status Badge -->
+                    <div id="jobStatusBadge"
+                        style="display:inline-block; padding:6px 16px; border-radius:20px; font-size:12px; font-weight:700; background:rgba(34, 197, 94, 0.15); color:#4ade80; border:1px solid rgba(34, 197, 94, 0.3);">
+                        DISPONIBLE
+                    </div>
+                </div>
+
+                <!-- Action Area -->
+                <div class="category-frame" style="margin-top:20px; border:1px solid #334155; background:#1e293b;">
+                    <div style="padding:25px; text-align:center;">
+                        <div style="display:flex; justify-content:space-around; margin-bottom:20px;">
+                            <div class="stat-mini-box">
+                                <div style="font-size:12px; color:#94a3b8; text-transform:uppercase;">Gain Est.</div>
+                                <div style="font-size:24px; font-weight:bold; color:#4ade80;">$50 - $150</div>
+                            </div>
+                            <!-- Future stat: Total Deliveries? -->
+                        </div>
+
+                        <button id="jobBtn" class="action-btn-large"
+                            style="width:100%; max-width:400px; margin:0 auto; display:flex; flex-direction:row; align-items:center; justify-content:center; gap:10px; background:linear-gradient(135deg, #3b82f6, #2563eb); height:60px;">
+                            <span style="font-size:24px;">🍕</span>
+                            <span style="font-size:16px; font-weight:bold;">Livrer une pizza</span>
+                        </button>
+
+                        <!-- Cooldown Bar -->
+                        <div style="max-width:400px; margin:15px auto 0 auto;">
+                            <div
+                                style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px; color:#94a3b8;">
+                                <span>Recharge</span>
+                                <span id="jobCooldownTimer">Prêt</span>
+                            </div>
+                            <div class="modern-progress" style="height:6px; background:#0f172a;">
+                                <div id="jobCooldownBar" class="modern-bar-fill"
+                                    style="width:100%; background:#3b82f6; transition: width 0.1s linear;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- SUB-TAB: PRODUCTION (REFONTE TOTALE) -->
+            <div id="sub-production" class="sub-panel" style="display:none">
+
+                <!-- ═══ SEEDS CARD (NEW) ═══ -->
+                <div class="pcard" style="margin-bottom: 20px;">
+                    <div class="pcard-header">
+                        <div class="pcard-header-main">
+                            <div class="pcard-icon-box">
+                                <span class="pcard-icon-emoji">🛒</span>
+                            </div>
+                            <div class="pcard-title-stack">
+                                <span class="pcard-eyebrow">MARCHÉ AGRICOLE</span>
+                                <h2 class="pcard-title">Graines</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pcard-panel">
+                        <!-- Seeds Info -->
+                        <div class="pcard-seeds-info">
+                            <div class="pcard-seeds-label">
+                                <span class="pcard-seeds-icon">🌾</span>
+                                <span>Graines en stock</span>
+                            </div>
+                            <strong class="pcard-seeds-count" id="seedCount">0</strong>
+                        </div>
+                        <!-- Buy Buttons -->
+                        <div class="pcard-buy-grid">
+                            <button id="buySeed" class="pcard-buy" onclick="buySeed(1)">
+                                <span class="pcard-buy-qty">+1</span>
+                                <span class="pcard-buy-price">$10</span>
+                            </button>
+                            <button id="buySeed10" class="pcard-buy" onclick="buySeed(10)">
+                                <span class="pcard-buy-qty">+10</span>
+                                <span class="pcard-buy-price">$100</span>
+                            </button>
+                            <button id="buySeedMax" class="pcard-buy pcard-buy--max" onclick="buySeedMax()">
+                                <span class="pcard-buy-qty">MAX</span>
+                                <span class="pcard-buy-price">$0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ PRODUCTION CARD v3 ═══ -->
+                <div class="pcard">
+
+                    <!-- ── HEADER ── -->
+                    <div class="pcard-header">
+                        <div class="pcard-header-main">
+                            <div class="pcard-icon-box">
+                                <span class="pcard-icon-emoji" id="productionBuildingIcon">🧹</span>
+                            </div>
+                            <div class="pcard-title-stack">
+                                <span class="pcard-eyebrow">BASE DE PRODUCTION</span>
+                                <h2 class="pcard-title" id="productionBuildingName">Chargement...</h2>
+                            </div>
+                        </div>
+                        <button class="pcard-expansion-btn"
+                            onclick="document.querySelector('.prod-expansion-card').scrollIntoView({behavior:'smooth',block:'start'})">
+                            🚀 Expansion
+                        </button>
+                    </div>
+
+                    <!-- ── STATS STRIP ── -->
+                    <div class="pcard-stats">
+                        <div class="pcard-stat">
+                            <span class="pcard-stat-emoji">🌿</span>
+                            <div class="pcard-stat-text">
+                                <span class="pcard-stat-value" id="statActivePlantsValue">0</span>
+                                <span class="pcard-stat-label">Plants actifs</span>
+                            </div>
+                        </div>
+                        <div class="pcard-stat-divider"></div>
+                        <div class="pcard-stat">
+                            <span class="pcard-stat-emoji">📦</span>
+                            <div class="pcard-stat-text">
+                                <span class="pcard-stat-value" id="statStockProducedValue">0 g</span>
+                                <span class="pcard-stat-label">Stock produit</span>
+                            </div>
+                        </div>
+                        <div class="pcard-stat-divider"></div>
+                        <div class="pcard-stat">
+                            <span class="pcard-stat-emoji">⚡</span>
+                            <div class="pcard-stat-text">
+                                <span class="pcard-stat-value" id="statEfficiencyValue">100%</span>
+                                <span class="pcard-stat-label">Efficacité</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── ACTION PANEL (PLANTING ONLY) ── -->
+                    <div class="pcard-panel" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                        <!-- Plant CTA -->
+                        <div class="pcard-plant-row">
+                            <button class="pcard-plant-cta" onclick="addToPlantingQueue('active', 1000)">
+                                <span class="pcard-plant-cta-icon">🌱</span>
+                                Tout Planter
+                            </button>
+                            <div class="pcard-cap">
+                                <span>Capacité du lieu de production :</span>
+                                <strong id="active-building-capacity">0 / 0</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+
+
+
+
+
+                <!-- ═══ PIPELINE DE PRODUCTION ═══ -->
+                <div class="prod-pipeline-card">
+                    <div class="prod-pipeline-title">⚙️ Pipeline de Production</div>
+                    <div class="prod-pipeline-row">
+                        <div class="prod-phase">
+                            <div class="prod-phase-header">
+                                <span class="prod-phase-icon">📋</span>
+                                <span class="prod-phase-name">File d'attente</span>
+                                <span class="prod-phase-count" id="queue-display">0</span>
+                            </div>
+                            <div class="prod-phase-bar-track">
+                                <div class="prod-phase-bar-fill" id="active-building-planting-progress"
+                                    style="width:0%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+                            </div>
+                        </div>
+                        <div class="prod-pipeline-arrow">↓</div>
+                        <div class="prod-phase">
+                            <div class="prod-phase-header">
+                                <span class="prod-phase-icon">🌱</span>
+                                <span class="prod-phase-name">En croissance</span>
+                                <span class="prod-phase-count" id="active-building-growing-count">0</span>
+                            </div>
+                            <div class="prod-phase-bar-track">
+                                <div class="prod-phase-bar-fill" id="active-building-growing-progress"
+                                    style="width:0%; background: linear-gradient(90deg, #34d399, #10b981);"></div>
+                            </div>
+                        </div>
+                        <div class="prod-pipeline-arrow">↓</div>
+                        <div class="prod-phase">
+                            <div class="prod-phase-header">
+                                <span class="prod-phase-icon">🌿</span>
+                                <span class="prod-phase-name">Prêt à récolter</span>
+                                <span class="prod-phase-count" id="active-building-harvesting-count">0</span>
+                            </div>
+                            <div class="prod-phase-bar-track">
+                                <div class="prod-phase-bar-fill" id="active-building-harvesting-progress"
+                                    style="width:0%; background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── AMÉLIORATIONS DU SITE ── -->
+                    <div class="prod-upgrades-section">
+                        <div class="prod-upgrades-title">🔧 Améliorations du site</div>
+
+                        <!-- Botanistes -->
+                        <div class="prod-upgrade-row prod-upgrade-botanist">
+                            <div class="prod-upgrade-left">
+                                <span class="prod-upgrade-emoji">🧑‍🌾</span>
+                                <div class="prod-upgrade-info">
+                                    <div class="prod-upgrade-label">Botanistes</div>
+                                    <div class="prod-upgrade-effect">+100% vitesse de récolte par botaniste</div>
+                                </div>
+                            </div>
+                            <div class="prod-upgrade-right">
+                                <span class="prod-upgrade-count" id="active-botanists">0</span>
+                                <button class="prod-upgrade-btn prod-upgrade-btn--botanist"
+                                    onclick="buyUpgrade('botanist')">
+                                    + Recruter <span class="prod-upgrade-price">$2 000</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Lampes UV -->
+                        <div class="prod-upgrade-row prod-upgrade-lamp">
+                            <div class="prod-upgrade-left">
+                                <span class="prod-upgrade-emoji">💡</span>
+                                <div class="prod-upgrade-info">
+                                    <div class="prod-upgrade-label">Lampes UV</div>
+                                    <div class="prod-upgrade-effect">+20% vitesse de croissance par lampe</div>
+                                </div>
+                            </div>
+                            <div class="prod-upgrade-right">
+                                <span class="prod-upgrade-count" id="active-lamps">0</span>
+                                <button class="prod-upgrade-btn prod-upgrade-btn--lamp" onclick="buyUpgrade('lamp')">
+                                    + Installer <span class="prod-upgrade-price">$3 000</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── BOUTON LABO ── -->
+                    <button class="prod-labo-btn" onclick="openLabo()">
+                        <span class="prod-labo-icon">🧪</span>
+                        Accéder au Labo
+                        <span class="prod-labo-badge">Recherches disponibles</span>
+                    </button>
+                </div>
+
+
+
+                <!-- ═══ PROCHAINE EXPANSION ═══ -->
+                <div class="prod-expansion-card">
+                    <div class="prod-expansion-header">
+                        <h3>🚀 Prochaine Expansion</h3>
+                    </div>
+                    <div id="nextBuildingContainer" style="padding:15px; text-align:center;">
+                        <p class="muted">Chargement...</p>
+                    </div>
+                </div>
+
+            </div>
+            <!-- (Labo section has been extracted to its own panel below) -->
+            <!-- SUB-TAB: TERRITORIES (STRUCTURE CORRIGÉE) -->
+            <div id="sub-territories" class="sub-panel" style="display:none">
+
+                <!-- CONQUÊTE TERRITORIALE - War Map Section -->
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>⚔️ Conquête Territoriale</h3>
+                        <span
+                            style="font-size:11px; color:var(--text-muted); background:rgba(220,38,38,0.1); padding:4px 8px; border-radius:6px;">Expansion</span>
+                    </div>
+                    <div id="warMapContainer" class="war-map-display">
+                        <!-- Populated by renderTerritories() -->
+                    </div>
+                </div>
+
+                <!-- Army Force Display -->
+                <div class="army-force-card">
+                    <div class="army-force-icon">⚔️</div>
+                    <div class="army-force-content">
+                        <div class="army-force-label">Force de Frappe Totale</div>
+                        <div class="army-force-value" id="totalArmyForce">0</div>
+                    </div>
+                </div>
+
+                <!-- Mercenaries Section -->
+                <div class="category-frame" style="margin-top:24px;">
+                    <div class="category-header">
+                        <h3>🎖️ Mercenaires d'Élite</h3>
+                        <span
+                            style="font-size:11px; color:var(--text-muted); background:rgba(79,70,229,0.1); padding:4px 8px; border-radius:6px;">Recrutement</span>
+                    </div>
+                    <div id="mercenaryShop"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: STOCKAGE (REFONTE) -->
+            <div id="sub-stockage" class="sub-panel" style="display:none">
+                <!-- Hero Capacity -->
+                <div class="storage-hero">
+                    <h4
+                        style="margin:0 0 10px 0; opacity:0.8; font-weight:lighter; font-size: 0.9rem; letter-spacing: 1px;">
+                        CAPACITÉ DU RÉSEAU</h4>
+                    <div
+                        style="font-size:32px; font-weight:bold; margin-bottom:15px; font-family: 'Inter', sans-serif;">
+                        <span id="storageCurrent">0</span> <span
+                            style="font-size:18px; opacity:0.6; font-weight: 500;">/ <span
+                                id="storageMax">0</span>g</span>
+                    </div>
+                    <div
+                        style="background: rgba(255,255,255,0.1); height: 12px; border-radius: 6px; overflow: hidden; position: relative;">
+                        <div id="storageBar"
+                            style="height: 100%; width: 0%; background: linear-gradient(90deg, #06b6d4, #3b82f6); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);">
+                        </div>
+                    </div>
+                </div>
+                <!-- Breakdown Stats -->
+                <div class="storage-stat-row">
+                    <div class="storage-stat-item">
+                        <div style="font-size:24px;">🎒</div>
+                        <div style="font-size:10px; opacity:0.6; letter-spacing:1px; margin-top:4px; font-weight: 700;">
+                            POCHES</div>
+                        <div style="font-weight:bold; font-size: 1.1rem;" id="statBase">100g</div>
+                    </div>
+                    <div class="storage-stat-item">
+                        <div style="font-size:24px;">🏭</div>
+                        <div style="font-size:10px; opacity:0.6; letter-spacing:1px; margin-top:4px; font-weight: 700;">
+                            ENTREPÔTS</div>
+                        <div style="font-weight:bold; font-size: 1.1rem;" id="statWarehouses">0g</div>
+                    </div>
+                    <div class="storage-stat-item">
+                        <div style="font-size:24px;">🌿</div>
+                        <div style="font-size:10px; opacity:0.6; letter-spacing:1px; margin-top:4px; font-weight: 700;">
+                            PROD</div>
+                        <div style="font-weight:bold; font-size: 1.1rem;" id="statProduction">0g</div>
+                    </div>
+                </div>
+                <!-- Storage Infrastructure Grid -->
+                <div style="margin-top:32px;">
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <span style="font-size: 24px; margin-right: 10px;">🏗️</span>
+                        <h3 style="margin: 0; font-size: 1.25rem;">Infrastructures</h3>
+                    </div>
+                    <div id="storageGrid" class="storage-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-TAB: VENTE (REFONTE COMPLETE) -->
+            <div id="sub-vente" class="sub-panel" style="display:none">
+                <!-- ═══════════════════════════════════════ -->
+                <!-- MARKET HERO BANNER                       -->
+                <!-- ═══════════════════════════════════════ -->
+                <div class="market-hero-banner">
+                    <!-- Left: Price -->
+                    <div class="market-hero-left">
+                        <div class="market-hero-icon-ring">💰</div>
+                        <div class="market-hero-price-block">
+                            <div class="market-hero-label">PRIX DU MARCHÉ</div>
+                            <div class="market-hero-price">
+                                <span id="marketPrice">$2.00</span><span class="market-hero-unit">/g</span>
+                            </div>
+                            <div id="marketTrend" class="market-hero-trend">━ Stable</div>
+                        </div>
+                    </div>
+                    <!-- Divider -->
+                    <div class="market-hero-divider"></div>
+                    <!-- Right: Stock -->
+                    <div class="market-hero-right">
+                        <div class="market-hero-icon-ring"
+                            style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.35);">📦</div>
+                        <div class="market-hero-stock-block">
+                            <div class="market-hero-label">STOCK DISPONIBLE</div>
+                            <div class="market-hero-stock-val"><span id="stockDisplay">0</span></div>
+                            <div class="market-hero-stock-sub">Valeur : <span id="potentialProfit"
+                                    class="market-hero-val-amount">$0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logistics Section -->
+                <div class="category-frame" style="margin-top:24px;">
+                    <div class="category-header">
+                        <h3>🚛 Logistique & Expédition</h3>
+                        <div id="fleet-stats-summary"
+                            style="font-size:11px; color:var(--text-muted); background:rgba(168,85,247,0.1); padding:4px 8px; border-radius:6px;">
+                            Chargement...
+                        </div>
+                    </div>
+                    <p style="color:#64748b; font-size:14px; margin:0 0 20px 0; text-align:center;">Optimisez vos routes
+                        de livraison pour écouler vos stocks au meilleur prix</p>
+                    <div id="fleetShop" class="grid one">
+                        <!-- Fleet items rendered via updateFleetUI() -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-TAB: TERRITOIRES (NOUVEAU) -->
+            <div id="sub-territories" class="sub-panel" style="display:none">
+                <!-- ZONE 1: CARTE DE GUERRE -->
+                <div class="category-frame"
+                    style="margin-bottom: 20px; border: 2px solid #dc2626; background: #fef2f2;">
+                    <div class="category-header">
+                        <h3 style="color: #dc2626;">🗺️ Carte de Guerre</h3>
+                    </div>
+                    <div id="warMapContainer" style="padding: 15px; text-align: center;">
+                        <!-- Rempli par renderTerritories() -->
+                        <p class="muted">Recherche de cibles...</p>
+                    </div>
+                </div>
+                <!-- ZONE 2: CASERNE -->
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>⚔️ Caserne & Mercenaires</h3>
+                    </div>
+                    <div id="mercenaryShop" class="grid two" style="margin-top: 20px;">
+                        <!-- Rempli par renderTerritories() -->
+                        <p class="muted">Chargement de la caserne...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="vente" class="panel" style="display:none!important">
+            <!-- Legacy Vente Section Hidden -->
+        </section>
+        <section id="assets" class="panel">
+            <!-- Sub Navigation -->
+            <div class="sub-nav">
+                <div class="sub-nav-item active" onclick="switchSubTab('assets', 'sub-my-collections')">Mes Collections
+                </div>
+                <div class="sub-nav-item" onclick="switchSubTab('assets', 'sub-cars')">Voitures</div>
+                <div class="sub-nav-item" onclick="switchSubTab('assets', 'sub-art')">Art</div>
+                <div class="sub-nav-item" onclick="switchSubTab('assets', 'sub-jewelry')">Bijoux</div>
+            </div>
+            <!-- SUB-TAB: MES COLLECTIONS -->
+            <div id="sub-my-collections" class="sub-panel">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏛️ Vos Collections Privées</h3>
+                    </div>
+                    <div id="ownedShopAssets">
+                        <p class="muted" style="text-align:center; padding:20px;">Aucune collection pour le moment.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- SUB-TAB: VOITURES -->
+            <div id="sub-cars" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏎️ Concessionnaire</h3>
+                    </div>
+                    <div class="shop" id="carAssets"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: ART -->
+            <div id="sub-art" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🎨 Galerie d'Art</h3>
+                    </div>
+                    <div class="shop" id="artAssets"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: BIJOUX -->
+            <div id="sub-jewelry" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>💎 Bijouterie</h3>
+                    </div>
+                    <div class="shop" id="jewelryAssets"></div>
+                </div>
+            </div>
+        </section>
+        <section id="business" class="panel">
+            <!-- Sub Navigation -->
+            <div class="sub-nav">
+                <div class="sub-nav-item active" onclick="switchSubTab('business', 'sub-properties')">Propriétés</div>
+                <div class="sub-nav-item" onclick="switchSubTab('business', 'sub-locatif')">Locatif</div>
+                <div class="sub-nav-item" onclick="switchSubTab('business', 'sub-biz')">Business</div>
+                <div class="sub-nav-item" onclick="switchSubTab('business', 'sub-stock')">Bourse</div>
+                <div class="sub-nav-item" onclick="switchSubTab('business', 'sub-crypto')">Crypto</div>
+            </div>
+            <!-- SUB-TAB: PROPRIETES -->
+            <div id="sub-properties" class="sub-panel">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏠 Vos Propriétés Owned</h3>
+                    </div>
+                    <div id="myPropertiesSection" class="shop">
+                        <p class="muted" style="text-align:center; padding:20px;">Aucune propriété possédée.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- SUB-TAB: LOCATIF -->
+            <div id="sub-locatif" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏢 Immobilier Locatif</h3>
+                    </div>
+                    <div class="shop" id="rentalAssets"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: BUSINESS -->
+            <div id="sub-biz" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏭 Entreprises & Business</h3>
+                    </div>
+                    <div class="shop" id="businessAssets"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: BOURSE -->
+            <div id="sub-stock" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>📈 Bourse (Actions)</h3>
+                    </div>
+                    <div class="grid two">
+                        <div class="coin">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4>Tech Corp</h4>
+                                <span class="price" id="stockTechPrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="techHoldings">0</strong> actions
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="techValue">$0.00</span>)</span>
+                                <span id="techGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="tech">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="stockTechChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="buyTechAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="primary buy-stock" data-stock="tech">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="sellTechAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="danger sell-stock" data-stock="tech">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="coin">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4>Pharma Inc</h4>
+                                <span class="price" id="stockPharmaPrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="pharmaHoldings">0</strong> actions
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="pharmaValue">$0.00</span>)</span>
+                                <span id="pharmaGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="pharma">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="stockPharmaChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="buyPharmaAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="primary buy-stock" data-stock="pharma">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="sellPharmaAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="danger sell-stock" data-stock="pharma">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="coin">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <h4>Energy Global</h4>
+                                <span class="price" id="stockEnergyPrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="energyHoldings">0</strong> actions
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="energyValue">$0.00</span>)</span>
+                                <span id="energyGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="energy">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="stockEnergyChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="buyEnergyAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="primary buy-stock" data-stock="energy">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="sellEnergyAmount" placeholder="Nombre d'actions" min="1"
+                                        step="1">
+                                    <button class="danger sell-stock" data-stock="energy">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; font-size:12px;" class="muted">
+                        Portefeuille: <strong id="totalStockValue">$0</strong>
+                    </div>
+                </div>
+            </div>
+            <!-- SUB-TAB: TERRITORIES -->
+            <div id="sub-territories" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🌍 Conquête de Territoires</h3>
+                    </div>
+                    <!-- War Map -->
+                    <div id="warMapContainer" style="margin-bottom:20px;"></div>
+                    <!-- Mercenary Shop -->
+                    <div class="category-header">
+                        <h3>🏴‍☠️ Mercenaires</h3>
+                    </div>
+                    <div id="mercenaryShop"></div>
+                </div>
+            </div>
+            <!-- SUB-TAB: CRYPTO -->
+            <div id="sub-crypto" class="sub-panel" style="display:none">
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>₿ Crypto Marché</h3>
+                    </div>
+                    <div class="grid two">
+                        <div class="coin">
+                            <div>
+                                <h4>Bitcoin</h4>
+                                <span class="price" id="btcPrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="btcHoldings">0</strong> BTC
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="btcValue">$0.00</span>)</span>
+                                <span id="btcGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="btc">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="btcChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="btcBuyAmount" placeholder="Quantité à acheter" min="0.0001"
+                                        step="0.0001">
+                                    <button class="primary buy-crypto" data-crypto="btc">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="btcSellAmount" placeholder="Quantité à vendre" min="0.0001"
+                                        step="0.0001">
+                                    <button class="danger sell-crypto" data-crypto="btc">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="coin">
+                            <div>
+                                <h4>Ethereum</h4>
+                                <span class="price" id="ethPrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="ethHoldings">0</strong> ETH
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="ethValue">$0.00</span>)</span>
+                                <span id="ethGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="eth">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="ethChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="ethBuyAmount" placeholder="Quantité à acheter" min="0.001"
+                                        step="0.001">
+                                    <button class="primary buy-crypto" data-crypto="eth">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="ethSellAmount" placeholder="Quantité à vendre" min="0.001"
+                                        step="0.001">
+                                    <button class="danger sell-crypto" data-crypto="eth">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="coin">
+                            <div>
+                                <h4>Dogecoin</h4>
+                                <span class="price" id="dogePrice">$0</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--muted); margin: 5px 0;">
+                                Portefeuille: <strong id="dogeHoldings">0</strong> DOGE
+                                <span style="margin-left: 10px; color: var(--success);">(<span
+                                        id="dogeValue">$0.00</span>)</span>
+                                <span id="dogeGainLoss" style="margin-left: 5px; font-size: 11px;"></span>
+                            </div>
+                            <!-- Chart Filters -->
+                            <div class="chart-filters" data-target="doge">
+                                <button class="chart-filter active" data-period="J">J</button>
+                                <button class="chart-filter" data-period="S">S</button>
+                                <button class="chart-filter" data-period="M">M</button>
+                            </div>
+                            <canvas id="dogeChart" class="spark"></canvas>
+                            <div class="crypto-actions">
+                                <div class="buy-controls">
+                                    <input type="number" id="dogeBuyAmount" placeholder="Quantité à acheter" min="1"
+                                        step="1">
+                                    <button class="primary buy-crypto" data-crypto="doge">Acheter</button>
+                                </div>
+                                <div class="sell-controls">
+                                    <input type="number" id="dogeSellAmount" placeholder="Quantité à vendre" min="1"
+                                        step="1">
+                                    <button class="danger sell-crypto" data-crypto="doge">Vendre</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:10px; font-size:12px;" class="muted">
+                        Total Crypto: <strong id="totalCryptoValue">$0</strong>
+                    </div>
+                </div>
+        </section>
+        <!-- FINANCE PANEL -->
+        <section id="finance" class="panel">
+            <div class="category-frame">
+                <div class="category-header">
+                    <h3>💼 Banque & Bourse</h3>
+                </div>
+                <!-- Bank -->
+                <div class="card"
+                    style="padding:20px; text-align:center; margin-bottom:20px; background:linear-gradient(135deg, #1e293b, #0f172a); border:1px solid #334155;">
+                    <h3 style="color:#cbd5e1; margin-bottom:5px;">Compte Offshore</h3>
+                    <div style="font-size:32px; color:#22c55e; margin-bottom:15px;" id="bankBalanceDisplay">$0</div>
+                    <div style="display:flex; gap:10px;">
+                        <input type="number" id="bankAmount" placeholder="Montant..." class="input-modern"
+                            style="flex:1;">
+                        <button class="btn-premium-primary" onclick="bankTransaction('deposit')">DÉPOSER</button>
+                        <button class="btn-premium-danger" onclick="bankTransaction('withdraw')">RETIRER</button>
+                    </div>
+                    <div style="font-size:11px; color:var(--muted); margin-top:10px;">Intérêt: 1% par minute</div>
+                </div>
+                <!-- Businesses -->
+                <div class="category-frame">
+                    <div class="category-header">
+                        <h3>🏢 Business de Façade</h3>
+                    </div>
+                    <div id="businessList"></div>
+                </div>
+            </div>
+        </section>
+        <!-- IMMOBILIER PANEL -->
+        <section id="immobilier" class="panel">
+            <div class="category-frame">
+                <div class="category-header">
+                    <h3>🏰 Empire Immobilier</h3>
+                    <div id="passiveIncomeDisplay" style="font-size:14px; color:#22c55e; font-weight:bold;">+$0/s</div>
+                </div>
+                <div id="realEstateList"></div>
+            </div>
+        </section>
+        <!-- ASSETS PANEL -->
+        <section id="assets" class="panel">
+            <div class="category-frame">
+                <div class="category-header">
+                    <h3>💎 Collection de Luxe</h3>
+                </div>
+                <div style="margin-bottom:20px;">
+                    <h4 style="margin-bottom:10px;">Vos Biens</h4>
+                    <div id="ownedShopAssets" class="grid two"></div>
+                </div>
+                <h4 style="margin-bottom:10px;">Boutique de Luxe</h4>
+                <div id="luxuryShop" class="grid two"></div>
+            </div>
+        </section>
+        <section id="achievements" class="panel">
+            <div class="achievement-header">
+                <div class="level-info" style="width:100%">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <div>
+                            <h2 style="font-size:32px; margin:0">Niveau <span id="playerLevel">1</span> - <span
+                                    id="playerTitle" style="color:#fbbf24; font-size:0.8em">Petite Frappe</span></h2>
+                            <p style="margin:0; opacity:0.8">Score Total: <span id="totalPoints">0</span> pts</p>
+                        </div>
+                        <div class="level-badge">
+                            <span id="xpToNext">100</span> XP pour le niveau <span id="nextLevelTarget">2</span>
+                        </div>
+                    </div>
+                    <!-- Progress Bar Container -->
+                    <div
+                        style="width:100%; height:16px; background:rgba(0,0,0,0.3); border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.2);">
+                        <div id="levelProgressBar"
+                            style="width:0%; height:100%; background:#4ade80; transition:width 0.5s ease; box-shadow:0 0 10px rgba(74, 222, 128, 0.5);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="achievementsList">
+                <!-- Achievements generated by JS -->
+            </div>
+        </section>
+        <section id="profil" class="panel">
+            <!-- New Full-Width Level Card -->
+            <div
+                style="background:linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius:16px; padding:20px; color:white; margin-bottom:20px; box-shadow:0 10px 25px -5px rgba(79, 70, 229, 0.4);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px;">
+                    <div>
+                        <h2 style="margin:0; font-size:24px; font-weight:800; text-shadow:0 2px 4px rgba(0,0,0,0.1)">
+                            Niveau <span id="mobileProfileLevel">1</span> <span
+                                style="opacity:0.8; font-weight:400">-</span>
+                            <span id="mobileProfileTitle"
+                                style="color:#fbbf24; text-shadow:0 0 10px rgba(251, 191, 36, 0.3)">Petite Frappe</span>
+                        </h2>
+                        <p style="margin:5px 0 0 0; opacity:0.8; font-size:13px;">Score Total: <span
+                                id="mobileProfileScore">0</span> pts</p>
+                    </div>
+                    <div
+                        style="background:rgba(255,255,255,0.2); padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; white-space:nowrap; border:1px solid rgba(255,255,255,0.3)">
+                        <span id="mobileProfileNextTarget">100 XP</span> pour le niveau <span
+                            id="mobileProfileNextLevel">2</span>
+                    </div>
+                </div>
+                <div
+                    style="background:rgba(0,0,0,0.3); height:12px; border-radius:6px; overflow:hidden; position:relative;">
+                    <div id="mobileProfileProgressBar"
+                        style="width:0%; height:100%; background:linear-gradient(90deg, #fbbf24, #f59e0b); border-radius:6px; transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow:0 0 10px rgba(251, 191, 36, 0.5);">
+                    </div>
+                </div>
+                <div style="text-align:right; font-size:11px; margin-top:5px; opacity:0.7;">
+                    <span id="mobileProfileXP">0</span> XP actuels
+                </div>
+            </div>
+            <div class="category-frame">
+                <div class="category-header">
+                    <h3>👤 Gestion du Profil</h3>
+                </div>
+                <div style="padding:15px;">
+                    <div style="margin-bottom:15px;">
+                        <label>Nom du parrain</label>
+                        <input id="playerName" placeholder="Votre blaze" style="width:100%; margin-top:5px;">
+                    </div>
+                    <div class="grid two">
+                        <button id="saveBtn" class="primary">Sauvegarder</button>
+                        <button id="resetBtn" class="danger">Réinitialiser</button>
+                    </div>
+                    <button id="adminBtn" class="warning" style="width:100%; margin-top:10px;">💰 Admin : +$1M</button>
+                    <button id="cheatDiamondBtn" class="btn-diamond" style="width:100%; margin-top:8px;"
+                        onclick="cheatAddDiamonds()">💎
+                        Cheat : +100 Diamants</button>
+                </div>
+            </div>
+            <!-- Mobile Achievements Container -->
+            <div class="category-frame">
+                <div class="category-header">
+                    <h3>🏆 Vos Succès</h3>
+                </div>
+                <div id="mobileAchievementsList"></div>
+            </div>
+        </section>
+    </main>
+    <!-- MOBILE BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('dashboard')">
+            <div class="nav-icon">📊</div>
+            <div class="label">Dashboard</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('plantation')">
+            <div class="nav-icon">🏴‍☠️</div>
+            <div class="label">Empire</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('finance')">
+            <div class="nav-icon">💼</div>
+            <div class="label">Investissement</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('assets')">
+            <div class="nav-icon">💎</div>
+            <div class="label">Collection</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('profil')">
+            <div class="nav-icon">🏆</div> <!-- Changed Icon to Trophy -->
+            <div class="label">Succès</div>
+        </div>
+    </div>
+    <footer class="adbar">Empire Illicite v2.2 (FINAL) - Jeu de gestion</footer>
+    <!-- Notifications Container -->
+    <div id="notificationContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <!-- MODAL WRAPPER FOR SAFARI BUG FIX -->
+    <div id="safariModalFixWrapper" style="position: absolute; top:0; left:0; width:100%; height:0; overflow:visible;">
+        <!-- INVENTORY MODAL (BOTTOM SHEET) -->
+        <div id="inventoryModal" class="labo-modal-overlay" onclick="if(event.target === this) closeInventory()">
+            <div class="labo-modal">
+                <div class="labo-header">
+                    <h2 style="margin:0; display:flex; align-items:center; gap:8px;">🎒 Mon Inventaire</h2>
+                    <button onclick="closeInventory()" class="btn-close">✖</button>
+                </div>
+                <div class="labo-body">
+                    <div id="inventoryGrid" class="inventory-grid">
+                        <!-- Items injected here by JS -->
+                    </div>
+                    <div id="inventoryEmpty"
+                        style="display:none; text-align:center; padding: 40px 20px; color:#94a3b8;">
+                        <div style="font-size:40px; margin-bottom:10px;">🪹</div>
+                        <p>Votre sac est vide.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LABO MODAL (Bottom Sheet) -->
+        <div id="laboModal" class="labo-modal-overlay" onclick="if(event.target === this) closeLabo()">
+            <div class="labo-modal">
+                <div class="labo-header">
+                    <h2 style="margin:0; display:flex; align-items:center; gap:8px;">🔬 Laboratoire</h2>
+                    <button onclick="closeLabo()" class="btn-close">✖</button>
+                </div>
+                <div class="labo-body">
+                    <p style="margin:0 0 15px 0; opacity:0.9; font-size:14px;">Débloquez des technologies
+                        révolutionnaires pour dominer le marché</p>
+
+                    <!-- Active Boost Status -->
+                    <div id="activeBoostStatus" class="lab-boost-active" style="display:none;"></div>
+
+                    <!-- TABS (Segmented Control) -->
+                    <div class="labo-tabs">
+                        <div class="labo-tab-btn active" onclick="switchLabTab('tab-premium', this)">
+                            <span>💎 Marché Noir</span>
+                        </div>
+                        <div class="labo-tab-btn" onclick="switchLabTab('tab-research', this)">
+                            <span>🧪 Améliorations</span>
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT: PREMIUM -->
+                    <div id="tab-premium" class="labo-tab-content active">
+                        <div class="category-frame" style="margin-bottom:24px;">
+                            <div class="grid two">
+                                <!-- Insta-Grow Premium Card -->
+                                <div class="lab-premium-card" onclick="buyConsumable('insta_grow')">
+                                    <div class="lab-premium-icon">⚡</div>
+                                    <div class="lab-premium-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:16px; font-weight:700;">Engrais Miracle
+                                        </h4>
+                                        <p style="margin:0 0 12px 0; font-size:12px; opacity:0.9;">Force la récolte
+                                            immédiate de votre
+                                            production en cours</p>
+                                        <div class="lab-premium-price">
+                                            <span style="font-size:20px;">💎</span>
+                                            <span style="font-size:18px; font-weight:800;">10</span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-premium-badge">INSTANTANÉ</div>
+                                </div>
+
+                                <!-- Boost x2 Premium Card -->
+                                <div class="lab-premium-card" onclick="buyConsumable('double_yield')">
+                                    <div class="lab-premium-icon">🔥</div>
+                                    <div class="lab-premium-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:16px; font-weight:700;">Dopants
+                                        </h4>
+                                        <p style="margin:0 0 12px 0; font-size:12px; opacity:0.9;">Double la cadence de
+                                            production
+                                            pendant
+                                            30 minutes</p>
+                                        <div class="lab-premium-price">
+                                            <span style="font-size:20px;">💎</span>
+                                            <span style="font-size:18px; font-weight:800;">50</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cash Briefcase Card -->
+                                <div class="lab-premium-card" onclick="buyConsumable('cash_briefcase')">
+                                    <div class="lab-premium-icon">💼</div>
+                                    <div class="lab-premium-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:16px; font-weight:700;">Mallette d'Argent
+                                        </h4>
+                                        <p style="margin:0 0 12px 0; font-size:12px; opacity:0.9;">Injection de cash
+                                            adaptée à votre
+                                            progression actuelle</p>
+                                        <div class="lab-premium-price">
+                                            <span style="font-size:20px;">💎</span>
+                                            <span style="font-size:18px; font-weight:800;">20</span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-premium-badge" style="background:#22c55e;">CASH</div>
+                                </div>
+
+                                <!-- Premium Briefcase Card -->
+                                <div class="lab-premium-card" onclick="buyConsumable('premium_briefcase')">
+                                    <div class="lab-premium-icon">🧰</div>
+                                    <div class="lab-premium-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:16px; font-weight:700;">Mallette Premium
+                                        </h4>
+                                        <p style="margin:0 0 12px 0; font-size:12px; opacity:0.9;">Gros cash + item
+                                            aléatoire (Boost,
+                                            Récolte ou Diamants)</p>
+                                        <div class="lab-premium-price">
+                                            <span style="font-size:20px;">💎</span>
+                                            <span style="font-size:18px; font-weight:800;">60</span>
+                                        </div>
+                                    </div>
+                                    <div class="lab-premium-badge" style="background:#a855f7;">JACKPOT</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB CONTENT: RESEARCH -->
+                    <div id="tab-research" class="labo-tab-content">
+                        <div class="category-frame">
+                            <div class="grid two">
+                                <!-- Yield Research Card -->
+                                <div class="lab-research-card">
+                                    <div class="lab-research-icon"
+                                        style="background:linear-gradient(135deg, #10b981, #059669);">🧬
+                                    </div>
+                                    <div class="lab-research-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">Génétique
+                                            Améliorée
+                                        </h4>
+                                        <div id="labYieldLevel"
+                                            style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                                            Niveau
+                                            0</div>
+                                        <div class="lab-research-progress">
+                                            <div id="labYieldProgress" class="lab-research-progress-fill"
+                                                style="width:0%; background:linear-gradient(90deg, #10b981, #059669);">
+                                            </div>
+                                        </div>
+                                        <p style="margin:8px 0; font-size:11px; color:#64748b;">+10% rendement par
+                                            niveau
+                                        </p>
+                                    </div>
+                                    <button id="btnUpgradeYield" class="lab-research-btn">Rechercher</button>
+                                </div>
+
+                                <!-- Speed Research Card -->
+                                <div class="lab-research-card">
+                                    <div class="lab-research-icon"
+                                        style="background:linear-gradient(135deg, #f59e0b, #d97706);">⚡
+                                    </div>
+                                    <div class="lab-research-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">Croissance
+                                            Accélérée
+                                        </h4>
+                                        <div id="labSpeedLevel"
+                                            style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                                            Niveau
+                                            0</div>
+                                        <div class="lab-research-progress">
+                                            <div id="labSpeedProgress" class="lab-research-progress-fill"
+                                                style="width:0%; background:linear-gradient(90deg, #f59e0b, #d97706);">
+                                            </div>
+                                        </div>
+                                        <p style="margin:8px 0; font-size:11px; color:#64748b;">-10% temps de culture
+                                            par
+                                            niveau
+                                        </p>
+                                    </div>
+                                    <button id="btnUpgradeSpeed" class="lab-research-btn">Rechercher</button>
+                                </div>
+
+                                <!-- Space Research Card -->
+                                <div class="lab-research-card">
+                                    <div class="lab-research-icon"
+                                        style="background:linear-gradient(135deg, #3b82f6, #2563eb);">📦
+                                    </div>
+                                    <div class="lab-research-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">Optimisation
+                                            Spatiale
+                                        </h4>
+                                        <div id="labSpaceLevel"
+                                            style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                                            Niveau
+                                            0</div>
+                                        <div class="lab-research-progress">
+                                            <div id="labSpaceProgress" class="lab-research-progress-fill"
+                                                style="width:0%; background:linear-gradient(90deg, #3b82f6, #2563eb);">
+                                            </div>
+                                        </div>
+                                        <p style="margin:8px 0; font-size:11px; color:#64748b;">+20% capacité par niveau
+                                        </p>
+                                    </div>
+                                    <button id="btnUpgradeSpace" class="lab-research-btn">Rechercher</button>
+                                </div>
+
+                                <!-- Quality Research Card -->
+                                <div class="lab-research-card">
+                                    <div class="lab-research-icon"
+                                        style="background:linear-gradient(135deg, #8b5cf6, #7c3aed);">🌟
+                                    </div>
+                                    <div class="lab-research-content">
+                                        <h4 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">Pureté Supérieure
+                                        </h4>
+                                        <div id="labQualityLevel"
+                                            style="font-size:12px; color:#64748b; margin-bottom:8px;">
+                                            Niveau 0</div>
+                                        <div class="lab-research-progress">
+                                            <div id="labQualityProgress" class="lab-research-progress-fill"
+                                                style="width:0%; background:linear-gradient(90deg, #8b5cf6, #7c3aed);">
+                                            </div>
+                                        </div>
+                                        <p style="margin:8px 0; font-size:11px; color:#64748b;">+15% prix de vente par
+                                            niveau
+                                        </p>
+                                    </div>
+                                    <button id="btnUpgradeQuality" class="lab-research-btn">Rechercher</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function switchLabTab(tabId, btn) {
+            // Hide all tab contents
+            document.querySelectorAll('.labo-tab-content').forEach(function (content) {
+                content.classList.remove('active');
+            });
+            // Show the target tab content
+            document.getElementById(tabId).classList.add('active');
+
+            // Remove active state from all buttons
+            document.querySelectorAll('.labo-tab-btn').forEach(function (button) {
+                button.classList.remove('active');
+            });
+            // Add active state to clicked button
+            btn.classList.add('active');
+        }
+
+        function cheatAddDiamonds() {
+            if (typeof state !== 'undefined' && typeof updateUI === 'function') {
+                state.diamonds = (state.diamonds || 0) + 100;
+                showNotification('Cheat activé', '💎 +100 Diamants', 'achievement');
+                updateUI();
+            } else {
+                alert('Le jeu n\'est pas encore chargé. Attendez quelques secondes.');
+            }
+        }
+    </script>
+    <script>
+        // Global Error Handler for User Debugging
+        window.onerror = function (msg, url, line, col, error) {
+            alert("ERREUR JEU : " + msg + "\nLigne: " + line); // ENABLED for debugging
+            console.error("ERREUR JEU : ", msg, url, line, col, error);
+            return false;
+        };
+    </script>
+    <!-- CORE SCRIPTS -->
+    <script src="js/core/config.js?v=64"></script>
+    <script src="js/core/state.js?v=64"></script>
+    <script src="js/core/utils.js?v=64"></script>
+    <!-- MODULES (Dependencies First) -->
+    <script src="js/modules/ui.js?v=64"></script>
+    <script src="js/modules/production.js?v=64"></script>
+    <script src="js/modules/sales.js?v=64"></script>
+    <script src="js/modules/finance.js?v=64"></script>
+    <script src="js/modules/investments.js?v=64"></script>
+    <script src="js/modules/invest-render.js?v=64"></script>
+    <script src="js/modules/territories.js?v=64"></script>
+    <script src="js/modules/quests.js?v=64"></script>
+    <script src="js/modules/achievements.js?v=64"></script>
+    <script src="js/modules/lab.js?v=64"></script>
+    <script src="js/modules/assets.js?v=64"></script>
+    <script src="js/modules/collection-render.js?v=64"></script>
+    <!-- MAIN APP & LOOP -->
+    <script src="js/main.js?v=64"></script>
+
+    <!-- SERVICE WORKER -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered!', reg))
+                    .catch(err => console.log('SW Error:', err));
+            });
+        }
+    </script>
+    <!-- CHEST MODAL -->
+    <div id="chestModal"
+        style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+        <div
+            style="background:var(--bg-card); padding:40px; border-radius:24px; text-align:center; max-width:400px; width:90%; position:relative; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div id="chestIconAnim" class="chest-icon-anim" style="font-size:80px; margin-bottom:20px;">🎁</div>
+            <div id="lootReveal" style="display:none;">
+                <h2 style="margin-bottom:10px; color:var(--text);">Félicitations !</h2>
+                <div id="lootDesc" style="font-size:24px; font-weight:bold; margin-bottom:30px;">+100 Diamants</div>
+                <div style="display:grid; gap:10px;">
+                    <button class="btn-premium-primary" onclick="claimLoot(1, 0, false)">Récupérer</button>
+                    <button class="btn-premium-dark" onclick="claimLoot(2, 0, true)">📺 Pub : x2</button>
+                    <button class="btn-diamond" onclick="claimLoot(3, 5, false)">💎 x3 (Coût: 5)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

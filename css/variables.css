@@ -1,0 +1,64 @@
+:root {
+    /* --- PALETTE DARK (DÉFAUT) --- */
+    --bg-body: #050505;
+    --bg-app: #0f172a;
+    --bg-card: #1e293b;
+    --bg-glass: rgba(255, 255, 255, 0.08);
+
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+
+    --border-subtle: #334155;
+
+    /* Inputs */
+    --input-bg: #0f172a;
+    --input-border: #334155;
+
+    /* SHAPES */
+    --radius-btn: 14px;
+    --radius-card: 16px;
+
+    /* ANIMATIONS */
+    --transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Compatibility with existing vars */
+    --bg: var(--bg-body);
+    --sidebar: var(--bg-app);
+    --card: var(--bg-card);
+    --text: var(--text-main);
+    --muted: var(--text-muted);
+    /* Primary Indigo */
+    --primary: #6366f1;
+    --primary-2: #4f46e5;
+
+    /* Semantic Colors */
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --accent: #22c55e;
+
+    --border: var(--border-subtle);
+    --bg-secondary: #1e293b;
+}
+
+/* --- PALETTE LIGHT MODE --- */
+body.light-mode {
+    --bg-body: #e2e8f0;
+    --bg-app: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(0, 0, 0, 0.05);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-subtle: #e2e8f0;
+    --input-bg: #f1f5f9;
+    --input-border: #cbd5e1;
+
+    /* Compatibility */
+    --bg: var(--bg-body);
+    --sidebar: var(--bg-app);
+    --card: var(--bg-card);
+    --text: var(--text-main);
+    --muted: var(--text-muted);
+    --border: var(--border-subtle);
+    --bg-secondary: #f1f5f9;
+}

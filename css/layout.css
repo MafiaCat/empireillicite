@@ -1,0 +1,184 @@
+﻿/* Sidebar */
+.sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: auto;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar h1 {
+    font-size: 20px;
+    margin: 0 0 12px 0
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.nav .tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    text-align: left;
+    background: #ffffff;
+    color: var(--text);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.nav .tab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav .tab.active {
+    background: var(--primary);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.nav .tab.active:hover {
+    transform: translateY(-2px);
+}
+
+.wallet {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #1f2937, #374151);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    color: #fff;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.wallet::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 10%, transparent 10%), radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.1) 20%, transparent 20%);
+    background-size: 20px 20px, 40px 40px;
+    animation: move-bg 60s linear infinite;
+    opacity: 0.8;
+}
+
+@keyframes move-bg {
+    from {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    to {
+        transform: rotate(360deg) translate(20px, 20px);
+    }
+}
+
+.wallet-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.wallet-amount {
+    font-size: 36px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-top: 8px;
+    letter-spacing: -1px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Main content */
+main {
+    padding: 24px;
+    overflow: auto;
+}
+
+.panel {
+    display: none;
+}
+
+.panel.active {
+    display: block;
+}
+
+.grid {
+    display: grid;
+    gap: 16px;
+}
+
+.grid.two {
+    grid-template-columns: 1fr 1fr;
+}
+
+.grid.three {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.grid.one {
+    grid-template-columns: 1fr;
+}
+
+/* --- UI LAYOUT FIXES (Vertical Stacking) --- */
+#fleetShop,
+#plantProperties,
+#plantAssets,
+#carAssets {
+    grid-template-columns: 1fr !important;
+}
+
+/* --- SUB NAV SCROLL FIX --- */
+.sub-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding-bottom: 5px;
+    /* Space for scrollbar */
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.sub-nav::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+}
+
+.sub-nav-item {
+    flex: 0 0 auto;
+    /* Don't shrink */
+    padding: 8px 16px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sub-nav-item.active {
+    background: var(--primary);
+    color: white;
+}
