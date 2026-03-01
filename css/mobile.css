@@ -26,11 +26,11 @@
     }
 
     body {
-        display: flex;
-        flex-direction: column;
+        display: block;
         overflow-x: hidden;
         overflow-y: auto;
         width: 100%;
+        max-width: 100%;
         background: #f1f5f9;
     }
 

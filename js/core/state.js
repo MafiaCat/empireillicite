@@ -164,5 +164,64 @@ if (!state.fleet) {
 
 let chartInstances = {};
 function saveGame() {
+    state.lastSavedAt = Date.now(); // Track save time for offline progression
     localStorage.setItem('illicit-empire', JSON.stringify(state));
+}
+
+// ============================================
+// OFFLINE PROGRESSION CATCH-UP
+// ============================================
+function applyOfflineProgression() {
+    const lastSaved = savedState.lastSavedAt;
+    if (!lastSaved) return;
+
+    const now = Date.now();
+    const elapsedMs = now - lastSaved;
+    const elapsedHours = elapsedMs / (1000 * 60 * 60);
+
+    // Only apply if offline > 1 minute, cap at 7 days to avoid exploit
+    if (elapsedHours < (1 / 60)) return;
+    const cappedHours = Math.min(elapsedHours, 168); // 7 days max
+
+    // Calculate weekly income from all owned properties & businesses
+    let weeklyIncome = 0;
+    if (typeof purchasableAssets !== 'undefined') {
+        purchasableAssets.forEach(asset => {
+            if (['rental', 'business', 'real-estate'].includes(asset.type) && asset.income) {
+                const legacyCount = ((state.businesses || {})[asset.id]) || ((state.realEstate || {})[asset.id]) || 0;
+                const modernCount = (state.assets && state.assets[asset.id]) ? (state.assets[asset.id].count || 0) : 0;
+                const count = Math.max(legacyCount, modernCount);
+                if (count > 0) weeklyIncome += asset.income * count;
+            }
+        });
+    }
+
+    if (weeklyIncome <= 0) return;
+
+    // Income per hour = weeklyIncome / (7 * 24)
+    const incomePerHour = weeklyIncome / (7 * 24);
+    const earned = Math.floor(incomePerHour * cappedHours);
+
+    if (earned > 0) {
+        state.propertyVault = (state.propertyVault || 0) + earned;
+        const hours = Math.floor(cappedHours);
+        const mins = Math.round((cappedHours - hours) * 60);
+        const timeStr = hours > 0 ? `${hours}h${mins > 0 ? mins + 'm' : ''}` : `${mins}min`;
+        // Delay to ensure UI is ready
+        setTimeout(() => {
+            if (typeof showNotification === 'function') {
+                showNotification(
+                    '😴 Revenus hors-ligne',
+                    `+${typeof fmtCash === 'function' ? fmtCash(earned) : earned}$ accumulés en ${timeStr} dans votre coffre !`,
+                    'success'
+                );
+            }
+            if (typeof updateUI === 'function') updateUI();
+        }, 1500);
+    }
+}
+
+// Run offline catch-up right away (purchasableAssets may not be loaded yet, so also call from game init)
+if (typeof purchasableAssets !== 'undefined') {
+    applyOfflineProgression();
 }

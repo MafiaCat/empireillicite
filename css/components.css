@@ -4945,7 +4945,10 @@ button.buy-asset-refined {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .invest-portfolio-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .invest-card-stats {
