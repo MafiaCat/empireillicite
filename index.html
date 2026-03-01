@@ -215,7 +215,8 @@
         <section id="plantation" class="panel">
             <!-- Sub Navigation -->
             <div class="sub-nav">
-                <div class="sub-nav-item active" onclick="switchSubTab('plantation', 'sub-boulot')">Petit Boulot</div>
+                <div class="sub-nav-item active" onclick="switchSubTab('plantation', 'sub-boulot')">Revenus & Boulots
+                </div>
                 <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-production'); renderProduction();">
                     Production</div>
                 <div class="sub-nav-item" onclick="switchSubTab('plantation', 'sub-stockage'); renderStorageTab();">
@@ -226,6 +227,9 @@
             </div>
             <!-- SUB-TAB: BOULOT (MODERNISÉ) -->
             <div id="sub-boulot" class="sub-panel">
+                <!-- Caisse Container (JS injected) -->
+                <div id="caisseContainerBoulot" style="margin-bottom:20px;"></div>
+
                 <!-- Hero Section: Job Overview -->
                 <div class="production-hero-modern" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
                     <div style="font-size:48px; margin-bottom:12px;" class="production-icon-pulse">🛵</div>
@@ -589,32 +593,48 @@
                 <!-- ═══════════════════════════════════════ -->
                 <!-- MARKET HERO BANNER                       -->
                 <!-- ═══════════════════════════════════════ -->
-                <div class="market-hero-banner">
-                    <!-- Left: Price -->
-                    <div class="market-hero-left">
-                        <div class="market-hero-icon-ring">💰</div>
-                        <div class="market-hero-price-block">
-                            <div class="market-hero-label">PRIX DU MARCHÉ</div>
-                            <div class="market-hero-price">
-                                <span id="marketPrice">$2.00</span><span class="market-hero-unit">/g</span>
+                <div class="category-frame"
+                    style="padding: 16px; background: linear-gradient(135deg, #1e293b, #0f172a); border:none;">
+                    <div style="display:flex; flex-direction:column; gap:16px;">
+
+                        <!-- Top: Price -->
+                        <div
+                            style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:12px;">
+                            <div class="market-hero-icon-ring" style="width:40px; height:40px; font-size:20px;">💰</div>
+                            <div>
+                                <div style="font-size:11px; color:#94a3b8; font-weight:700; letter-spacing:1px;">PRIX DU
+                                    MARCHÉ</div>
+                                <div
+                                    style="color:white; font-size:24px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1;">
+                                    <span id="marketPrice">$2.00</span><span
+                                        style="font-size:16px; opacity:0.7; font-weight:500;">/g</span>
+                                </div>
                             </div>
-                            <div id="marketTrend" class="market-hero-trend">━ Stable</div>
                         </div>
-                    </div>
-                    <!-- Divider -->
-                    <div class="market-hero-divider"></div>
-                    <!-- Right: Stock -->
-                    <div class="market-hero-right">
-                        <div class="market-hero-icon-ring"
-                            style="background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.35);">📦</div>
-                        <div class="market-hero-stock-block">
-                            <div class="market-hero-label">STOCK DISPONIBLE</div>
-                            <div class="market-hero-stock-val"><span id="stockDisplay">0</span></div>
-                            <div class="market-hero-stock-sub">Valeur : <span id="potentialProfit"
-                                    class="market-hero-val-amount">$0</span></div>
+
+                        <!-- Bottom: Stock -->
+                        <div
+                            style="display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.05); padding:12px 16px; border-radius:12px;">
+                            <div class="market-hero-icon-ring"
+                                style="width:40px; height:40px; font-size:20px; background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.35);">
+                                📦</div>
+                            <div>
+                                <div style="font-size:11px; color:#94a3b8; font-weight:700; letter-spacing:1px;">STOCK
+                                    DISPONIBLE</div>
+                                <div style="display:flex; align-items:baseline; gap:8px;">
+                                    <span id="stockDisplay"
+                                        style="color:white; font-size:20px; font-weight:800;">0</span>
+                                    <span style="color:#10b981; font-size:13px; font-weight:600;"
+                                        id="potentialProfit">$0</span>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
+
+                <!-- Caisse Container (JS injected) -->
+                <div id="caisseContainerVente" style="margin-top:-10px;"></div>
 
                 <!-- Logistics Section -->
                 <div class="category-frame" style="margin-top:24px;">

@@ -457,6 +457,8 @@ const updateUI = function () {
             }
         }
 
+        renderCaisse(); // Render the sales vault box
+
         // QUICK ACTIONS BAR
         const quickActionsBar = el('quickActionsBar');
         if (quickActionsBar) {
@@ -573,7 +575,6 @@ const updateUI = function () {
 
     purchasableAssets.forEach(asset => {
         try {
-            // SKIP NEW INVESTMENT AND COLLECTION TYPES
             if (asset.type === 'rental' || asset.type === 'business' || asset.type === 'car' || asset.type === 'art' || asset.type === 'jewelry') return;
 
             // Logic for displaying assets in shop
@@ -581,7 +582,6 @@ const updateUI = function () {
             const isMultiBuy = ['real-estate', 'storage'].includes(asset.type);
             const isOwned = !!state.assets[asset.id];
 
-            // Show if NOT owned OR if it IS multi-buy compatible
             if (!isOwned || isMultiBuy) {
 
                 // Calculate Dynamic Price
@@ -597,6 +597,7 @@ const updateUI = function () {
                     }
                 }
 
+                // Build cards...
                 const assetCard = document.createElement('div');
                 assetCard.className = 'asset-card-refined'; // Use a new class for refined style
 
@@ -1356,4 +1357,50 @@ window.triggerConfetti = function (btn) {
     }
 
     requestAnimationFrame(animate);
+};
+
+// ==========================================
+// CAISSE (DRUG MONEY ACCUMULATOR)
+// ==========================================
+window.renderCaisse = function () {
+    const caisseHTML = `
+        <div style="background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; padding: 20px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="font-size: 32px; filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.4)); animation: pulse 2s infinite;">💵</div>
+                <div>
+                    <div style="font-size: 13px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; text-transform: uppercase;">La Caisse (Ventes)</div>
+                    <div style="font-size: 28px; font-weight: 800; color: #10b981; font-variant-numeric: tabular-nums;">${fmtCash(state.caisse || 0)}</div>
+                </div>
+            </div>
+            <button onclick="collectCaisse(event)" style="background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 8px; padding: 10px 20px; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(16, 185, 129, 0.2)'">
+                Récolter
+            </button>
+        </div>
+    `;
+
+    const containerVente = document.getElementById('caisseContainerVente');
+    const containerBoulot = document.getElementById('caisseContainerBoulot');
+
+    if (containerVente) containerVente.innerHTML = caisseHTML;
+    if (containerBoulot) containerBoulot.innerHTML = caisseHTML;
+};
+
+window.collectCaisse = function (event) {
+    const amount = state.caisse || 0;
+    if (amount <= 0) {
+        showNotification('Caisse Vide', 'Il n\'y a pas d\'argent à récolter.', 'warning');
+        return;
+    }
+
+    state.cash += amount;
+    state.caisse = 0;
+    saveGame();
+
+    const btn = event && event.currentTarget ? event.currentTarget : null;
+    if (btn && typeof triggerGoldRain === 'function') {
+        triggerGoldRain(btn);
+    }
+
+    showNotification('💰 Récolte', `Vous avez récupéré $${fmtInt(amount)} de la caisse !`, 'success');
+    updateUI();
 };

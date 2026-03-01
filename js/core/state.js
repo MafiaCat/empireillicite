@@ -196,25 +196,108 @@ function applyOfflineProgression() {
         });
     }
 
-    if (weeklyIncome <= 0) return;
+    // ==========================================
+    // SEED PRODUCTION SIMULATION
+    // ==========================================
+    const building = state.activeBuilding;
+    let harvestedGrams = 0;
 
-    // Income per hour = weeklyIncome / (7 * 24)
-    const incomePerHour = weeklyIncome / (7 * 24);
-    const earned = Math.floor(incomePerHour * cappedHours);
+    if (building && typeof PRODUCTION_PATH !== 'undefined' && typeof calculateMaxStock !== 'undefined') {
+        const config = PRODUCTION_PATH[state.productionLevel];
+        const capacity = config ? config.cap : 0;
+        const maxStock = calculateMaxStock();
 
-    if (earned > 0) {
+        const botanists = building.botanists || 0;
+        const lamps = building.lamps || 0;
+
+        // Only run simulation if we have capacity and (botanists OR stuff already in queue/growing)
+        if (capacity > 0 && (botanists > 0 || building.plantingQueue > 0 || building.growing > 0 || building.mature > 0)) {
+
+            let simSeconds = cappedHours * 3600;
+            const dt = 1; // Simulate in 1-second ticks for accuracy
+
+            const plantRate = 0.2 * (1 + botanists);
+            const growRate = (1 / 10) * (1 + lamps * 0.2); // Base growth is 10 sec
+            const harvestRate = 0.2 * (1 + botanists);
+
+            while (simSeconds > 0) {
+                // Determine bottlenecks to fast-forward if possible
+                // For simplicity, we step 1 second at a time if stock isn't full
+                if (state.stockGrams >= maxStock && building.mature > 0) break; // Stock full, can't harvest
+
+                // 1. Planting
+                if (botanists > 0) {
+                    // Auto-add to queue if we have seeds
+                    const spaceFree = capacity - ((building.plants || 0) + (building.growing || 0) + (building.mature || 0) + (building.plantingQueue || 0));
+                    if (spaceFree > 0 && state.seeds > 0) {
+                        const toPlant = Math.min(spaceFree, state.seeds);
+                        building.plantingQueue = (building.plantingQueue || 0) + toPlant;
+                        state.seeds -= toPlant;
+                    }
+                }
+
+                if (building.plantingQueue > 0) {
+                    const currentTotal = (building.plants || 0) + (building.growing || 0) + (building.mature || 0);
+                    if (currentTotal < capacity) {
+                        building.plantingAcc = (building.plantingAcc || 0) + plantRate;
+                        while (building.plantingAcc >= 1 && building.plantingQueue > 0 && ((building.plants || 0) + (building.growing || 0) + (building.mature || 0) < capacity)) {
+                            building.plantingQueue--;
+                            building.growing = (building.growing || 0) + 1;
+                            building.plantingAcc -= 1;
+                        }
+                    }
+                }
+
+                // 2. Growing
+                if (building.growing > 0) {
+                    const totalGrowAcc = building.growing * growRate;
+                    building.growingAcc = (building.growingAcc || 0) + totalGrowAcc;
+                    while (building.growingAcc >= 1 && building.growing > 0) {
+                        building.growing--;
+                        building.mature = (building.mature || 0) + 1;
+                        building.growingAcc -= 1;
+                    }
+                }
+
+                // 3. Harvesting
+                if (building.mature > 0 && botanists > 0) {
+                    if (state.stockGrams + 10 <= maxStock) {
+                        building.harvestAcc = (building.harvestAcc || 0) + harvestRate;
+                        while (building.harvestAcc >= 1 && building.mature > 0 && state.stockGrams + 10 <= maxStock) {
+                            building.mature--;
+                            state.stockGrams += 10;
+                            harvestedGrams += 10;
+                            // Update track stats
+                            state.totalProduction = (state.totalProduction || 0) + 10;
+                            building.harvestAcc -= 1;
+                        }
+                    }
+                }
+
+                // If nothing is queued, growing, or mature AND botanists didn't add seeds, we can abort the simulation to save CPU
+                if (building.plantingQueue === 0 && building.growing === 0 && (building.mature === 0 || state.stockGrams >= maxStock) && (state.seeds === 0 || botanists === 0)) {
+                    break;
+                }
+
+                simSeconds -= dt;
+            }
+        }
+    }
+
+    if (earned > 0 || harvestedGrams > 0) {
         state.propertyVault = (state.propertyVault || 0) + earned;
         const hours = Math.floor(cappedHours);
         const mins = Math.round((cappedHours - hours) * 60);
         const timeStr = hours > 0 ? `${hours}h${mins > 0 ? mins + 'm' : ''}` : `${mins}min`;
+
+        let msg = `En ${timeStr}, vous avez accumulé:<br/>`;
+        if (earned > 0) msg += `💵 <b>+${typeof fmtCash === 'function' ? fmtCash(earned) : earned}$</b> dans les coffres<br/>`;
+        if (harvestedGrams > 0) msg += `📦 <b>+${typeof fmtMass === 'function' ? fmtMass(harvestedGrams) : harvestedGrams}g</b> de production<br/>`;
+
         // Delay to ensure UI is ready
         setTimeout(() => {
             if (typeof showNotification === 'function') {
-                showNotification(
-                    '😴 Revenus hors-ligne',
-                    `+${typeof fmtCash === 'function' ? fmtCash(earned) : earned}$ accumulés en ${timeStr} dans votre coffre !`,
-                    'success'
-                );
+                showNotification('😴 Retour au jeu', msg, 'success');
             }
             if (typeof updateUI === 'function') updateUI();
         }, 1500);

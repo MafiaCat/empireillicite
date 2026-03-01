@@ -46,7 +46,7 @@ function addToPlantingQueue(propertyId, count = 1) {
     }
 
     if (planted > 0) {
-        startPlanting();
+        // Planting is queued; updateProgressBars() will process it automatically
     }
     return planted;
 }

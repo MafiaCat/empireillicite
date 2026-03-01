@@ -301,8 +301,8 @@ function handleClaimDelivery(type, index) {
 
     const claim = fleetState.claimList[index];
 
-    // Add revenue
-    state.cash += claim.revenue;
+    // Add revenue to Caisse instead of direct cash
+    state.caisse = (state.caisse || 0) + claim.revenue;
     trackFinance(claim.revenue, 'revenue');
 
     if (typeof updateQuestProgress === 'function') {
@@ -313,7 +313,7 @@ function handleClaimDelivery(type, index) {
     // Remove from claim list
     fleetState.claimList.splice(index, 1);
 
-    showNotification('💰 Récolte', `Vous avez récolté $${fmtInt(claim.revenue)}`, 'success');
+    showNotification('💰 Récolte', `Vous avez généré $${fmtInt(claim.revenue)} dans votre Caisse`, 'success');
     updateFleetUI();
     updateUI();
 }
@@ -441,7 +441,7 @@ function sellProduct(amount) {
     if (state.stockGrams >= amount) {
         const revenue = amount * marketPrice;
         state.stockGrams -= amount;
-        state.cash += revenue;
+        state.caisse = (state.caisse || 0) + revenue;
         trackFinance(revenue, 'revenue');
 
         // QUEST HOOKS
@@ -452,7 +452,7 @@ function sellProduct(amount) {
             updateQuestProgress('deliver', 1);
         }
 
-        showNotification('💰 Vente', `Vendu ${fmtMass(amount)} pour $${fmtCash(revenue)}`, 'success');
+        showNotification('💰 Vente', `Vendu ${fmtMass(amount)} pour $${fmtCash(revenue)} (Placé en Caisse)`, 'success');
         updateUI();
     } else {
         showNotification('❌ Erreur', 'Pas assez de stock !', 'error');
