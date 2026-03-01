@@ -218,6 +218,12 @@ const updateUI = function () {
     // Top bar diamond display
     const topDiamondEl = document.getElementById('topDiamondDisplay');
     if (topDiamondEl) topDiamondEl.textContent = state.diamonds !== undefined ? state.diamonds : 0;
+
+    // Vault displays
+    const vD1 = document.getElementById('rentalVaultDisplay');
+    if (vD1) vD1.textContent = fmtCash(state.vault || 0);
+    const vD2 = document.getElementById('businessVaultDisplay');
+    if (vD2) vD2.textContent = fmtCash(state.vault || 0);
     // --------------------------
 
     // Calculate Level Progress first

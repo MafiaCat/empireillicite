@@ -54,6 +54,12 @@ function renderRentalTab() {
                     <div class="invest-stat-label">Revenu/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyIncome * 52)}</div>
                 </div>
+                <!-- NOUS AJOUTONS LE COFFRE ICI -->
+                <div class="invest-stat-box" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
+                    <div class="invest-stat-label">Coffre-fort</div>
+                    <div class="invest-stat-value" id="rentalVaultDisplay" style="color:#4ade80;">${fmtCash(state.vault || 0)}</div>
+                    <button onclick="collectVault()" style="width:100%; margin-top:8px; padding:6px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #22c55e, #16a34a); color:white; border-radius:6px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Récupérer</button>
+                </div>
             </div>
         </div>
     `;
@@ -156,6 +162,12 @@ function renderBusinessTab() {
                 <div class="invest-stat-box">
                     <div class="invest-stat-label">Projection/An</div>
                     <div class="invest-stat-value">${fmtCash(weeklyRevenue * 52)}</div>
+                </div>
+                <!-- NOUS AJOUTONS LE COFFRE ICI -->
+                <div class="invest-stat-box" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3);">
+                    <div class="invest-stat-label">Coffre-fort</div>
+                    <div class="invest-stat-value" id="businessVaultDisplay" style="color:#4ade80;">${fmtCash(state.vault || 0)}</div>
+                    <button onclick="collectVault()" style="width:100%; margin-top:8px; padding:6px; font-size:12px; font-weight:800; background:linear-gradient(135deg, #22c55e, #16a34a); color:white; border-radius:6px; border:none; cursor:pointer; text-transform:uppercase; letter-spacing:1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">Récupérer</button>
                 </div>
             </div>
         </div>

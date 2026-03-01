@@ -18,17 +18,26 @@
 
         // --- PASSIVE INCOME FROM ASSETS ---
         let totalPassive = 0;
-        if (typeof BUSINESSES !== 'undefined' && state.businesses) {
-            BUSINESSES.forEach(b => totalPassive += (state.businesses[b.id] || 0) * b.income);
-        }
-        if (typeof REAL_ESTATE !== 'undefined' && state.realEstate) {
-            REAL_ESTATE.forEach(r => totalPassive += (state.realEstate[r.id] || 0) * r.income);
+        if (typeof purchasableAssets !== 'undefined') {
+            purchasableAssets.forEach(asset => {
+                if (asset.type === 'business' || asset.type === 'rental' || asset.type === 'real-estate') {
+                    const legacyCountB = (state.businesses && state.businesses[asset.id]) ? state.businesses[asset.id] : 0;
+                    const legacyCountR = (state.realEstate && state.realEstate[asset.id]) ? state.realEstate[asset.id] : 0;
+                    const modernCount = (state.assets && state.assets[asset.id] && state.assets[asset.id].count) ? state.assets[asset.id].count : 0;
+                    const count = Math.max(legacyCountB, legacyCountR, modernCount);
+                    if (count > 0 && asset.income) {
+                        totalPassive += count * asset.income;
+                    }
+                }
+            });
         }
 
         if (totalPassive > 0) {
-            // passive is per second, loop is 100ms
+            // passive is per week for standard (income is per week conceptually or per whatever base unit)
+            // Typically in this idle game income was per tick or per second. 
+            // Original code: tickIncome = totalPassive / 10; -> This means totalPassive is income per second.
             const tickIncome = totalPassive / 10;
-            state.cash += tickIncome;
+            state.vault = (state.vault || 0) + tickIncome; // NEW: accumulates in vault
             state.passiveIncome = totalPassive; // Keep track for UI
         }
 
@@ -73,7 +82,8 @@
 
         // Revenus passifs des assets
         if (state.passiveIncome > 0) {
-            state.cash += state.passiveIncome / (24 * 60 * 60 * 10);
+            // This second passive block in main.js will also be updated to fill the vault if needed. 
+            // Wait, this duplicates the income? Original code had this AND the above. Let's just remove this duplicate to prevent double rewarding.
         }
 
         // Plantation automatique
