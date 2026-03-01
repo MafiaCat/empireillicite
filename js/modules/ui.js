@@ -1186,6 +1186,93 @@ window.useItem = function (itemId) {
 };
 
 // --- CELEBRATION EFFECTS ---
+
+// Gold coin rain — for vault collection
+window.triggerGoldRain = function (btn) {
+    // Calculate origin: top-center of the vault button
+    let originX = window.innerWidth / 2;
+    let originY = window.innerHeight / 2;
+
+    if (btn && btn instanceof HTMLElement) {
+        const rect = btn.getBoundingClientRect();
+        originX = rect.left + rect.width / 2;
+        originY = rect.top; // shoot from top of button
+    }
+
+    const gravity = 0.35;
+    const particles = [];
+    const COUNT = 25;
+    const symbols = ['💰', '💵', '💸', '$', '$', '$'];
+
+    for (let i = 0; i < COUNT; i++) {
+        const el = document.createElement('div');
+        const useEmoji = Math.random() > 0.4;
+        const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+        const size = Math.random() * 10 + 14; // 14-24px
+
+        el.style.cssText = `
+            position: fixed;
+            z-index: 1000000;
+            pointer-events: none;
+            top: ${originY}px;
+            left: ${originX}px;
+            font-size: ${useEmoji ? size : size * 0.8}px;
+            font-weight: 900;
+            line-height: 1;
+            color: #fde047;
+            text-shadow: 0 0 8px rgba(253, 224, 71, 0.9);
+            user-select: none;
+        `;
+        el.textContent = useEmoji ? symbol : '$';
+
+        document.body.appendChild(el);
+
+        particles.push({
+            el,
+            x: originX,
+            y: originY,
+            vx: (Math.random() - 0.5) * 8,   // ±4 horizontal
+            vy: -(Math.random() * 9 + 3),      // upward: -3 to -12
+            rotation: Math.random() * 40 - 20,
+            rotationSpeed: (Math.random() - 0.5) * 8,
+            opacity: 1,
+            life: Math.random() * 70 + 55      // 55–125 frames
+        });
+    }
+
+    function animate() {
+        let alive = false;
+
+        particles.forEach(p => {
+            if (p.life <= 0) {
+                if (p.el.parentNode) p.el.remove();
+                return;
+            }
+
+            p.vy += gravity;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.rotation += p.rotationSpeed;
+            p.life--;
+
+            if (p.life < 30) {
+                p.opacity = p.life / 30;
+            }
+
+            p.el.style.left = p.x + 'px';
+            p.el.style.top = p.y + 'px';
+            p.el.style.transform = `rotate(${p.rotation}deg)`;
+            p.el.style.opacity = p.opacity;
+
+            alive = true;
+        });
+
+        if (alive) requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+};
+
 window.triggerConfetti = function (btn) {
     const colors = ['#fde047', '#f59e0b', '#22c55e', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444', '#fb7185'];
 

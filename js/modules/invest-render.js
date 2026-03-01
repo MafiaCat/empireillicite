@@ -8,7 +8,7 @@ console.log(">>> INVEST-RENDER.JS v4 LOADED <<<");
 const elInvest = (id) => document.getElementById(id);
 
 // Shared vault collect function, exposed globally
-window.collectPropertyVault = function () {
+window.collectPropertyVault = function (event) {
     const amount = Math.floor(state.propertyVault || 0);
     if (amount <= 0) {
         showNotification('🏦 Coffre-fort', 'Le coffre est vide !', 'info');
@@ -17,6 +17,13 @@ window.collectPropertyVault = function () {
     state.cash += amount;
     state.propertyVault = (state.propertyVault || 0) - amount;
     showNotification('💰 Coffre récupéré', `+${fmtCash(amount)} ajouté à votre portefeuille !`, 'success');
+
+    // Trigger gold coin rain animation from the button
+    const btn = event && event.currentTarget ? event.currentTarget : (event && event.target ? event.target : null);
+    if (btn && typeof triggerGoldRain === 'function') {
+        triggerGoldRain(btn);
+    }
+
     updateUI();
     // Refresh tabs if displayed
     if (typeof renderBusinessTab === 'function') renderBusinessTab();
@@ -76,7 +83,7 @@ function renderRentalTab() {
                         <div class="property-vault-amount" id="vaultAmountRental">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
                     </div>
                 </div>
-                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                <button class="property-vault-btn" onclick="collectPropertyVault(event)">
                     💵 Récupérer
                 </button>
             </div>
@@ -192,7 +199,7 @@ function renderBusinessTab() {
                         <div class="property-vault-amount" id="vaultAmountBusiness">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
                     </div>
                 </div>
-                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                <button class="property-vault-btn" onclick="collectPropertyVault(event)">
                     💵 Récupérer
                 </button>
             </div>
@@ -660,7 +667,7 @@ function renderPropertiesTab() {
                         <div class="property-vault-amount" id="vaultAmountProperties" style="color:#fde047;">${fmtCash(Math.floor(state.propertyVault || 0))}</div>
                     </div>
                 </div>
-                <button class="property-vault-btn" onclick="collectPropertyVault()">
+                <button class="property-vault-btn" onclick="collectPropertyVault(event)">
                     💵 Récupérer
                 </button>
             </div>
