@@ -67,10 +67,6 @@ function renderRentalTab() {
                     <div class="invest-stat-label">Revenu/Semaine</div>
                     <div class="invest-stat-value">${fmtCash(weeklyIncome)}</div>
                 </div>
-                <div class="invest-stat-box">
-                    <div class="invest-stat-label">Revenu/An</div>
-                    <div class="invest-stat-value">${fmtCash(weeklyIncome * 52)}</div>
-                </div>
             </div>
             <div class="property-vault-card">
                 <div class="property-vault-left">
@@ -181,10 +177,6 @@ function renderBusinessTab() {
                 <div class="invest-stat-box">
                     <div class="invest-stat-label">Revenu/Semaine</div>
                     <div class="invest-stat-value">${fmtCash(weeklyRevenue)}</div>
-                </div>
-                <div class="invest-stat-box">
-                    <div class="invest-stat-label">Projection/An</div>
-                    <div class="invest-stat-value">${fmtCash(weeklyRevenue * 52)}</div>
                 </div>
             </div>
             <div class="property-vault-card">
@@ -626,6 +618,8 @@ function renderPropertiesTab() {
 
     const totalValue = ownedProperties.reduce((sum, p) => sum + (p.price * p.ownedCount), 0);
     const totalCount = ownedProperties.reduce((sum, p) => sum + p.ownedCount, 0);
+    const totalWeeklyIncome = ownedProperties.reduce((sum, p) => sum + ((p.income || 0) * p.ownedCount), 0);
+    const totalDailyIncome = totalWeeklyIncome / 7;
 
     let html = '<div style=\'padding:10px;\'>';
     html += `
@@ -634,7 +628,8 @@ function renderPropertiesTab() {
             <div style='display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px;'>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Propriétés</div><div style='font-size:28px; font-weight:700;'>`+ totalCount + `</div></div>
                 <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Valeur Totale</div><div style='font-size:28px; font-weight:700; color:#22c55e;'>`+ fmtCash(totalValue) + `</div></div>
-                <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Types</div><div style='font-size:28px; font-weight:700; color:#3b82f6;'>`+ ownedProperties.length + `</div></div>
+                <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Revenu/Jour</div><div style='font-size:28px; font-weight:700; color:#fde047;'>`+ fmtCash(totalDailyIncome) + `</div></div>
+                <div><div style='font-size:12px; opacity:0.7; margin-bottom:4px;'>Revenu/Semaine</div><div style='font-size:28px; font-weight:700; color:#fde047;'>`+ fmtCash(totalWeeklyIncome) + `</div></div>
             </div>
             <div class="property-vault-card" style="margin-top:16px;">
                 <div class="property-vault-left">
