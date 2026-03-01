@@ -4375,11 +4375,12 @@ button.buy-asset-refined {
 .golden-shockwave-active {
     animation: borderGlowPulse 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
     z-index: 10;
+    overflow: hidden !important;
+    /* Prevents the circle from expanding the page size and causing scrollbars */
+    position: relative;
 }
 
-.golden-shockwave-active>* {
-    animation: cardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+/* Removed cardPop to prevent layout thrashing/scrolling when inner items expand */
 
 /* Modifer class applied via JS to the purchase button */
 .golden-pulse-btn {
