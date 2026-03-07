@@ -45,12 +45,14 @@
         top: 0;
         left: 0;
         right: 0;
-        height: 56px;
+        height: calc(56px + env(safe-area-inset-top));
         background: transparent;
         display: flex;
-        align-items: center;
+        align-items: flex-end;
+        /* Align items to the bottom of the safe area */
         justify-content: space-between;
-        padding: 0 12px;
+        padding: 0 12px 10px 12px;
+        padding-top: env(safe-area-inset-top);
         z-index: 1000;
         pointer-events: none;
         /* Let clicks pass through empty space */
@@ -259,9 +261,9 @@
 
     /* --- CONTENT AREA --- */
     main {
-        margin-top: var(--header-height);
+        margin-top: calc(var(--header-height) + env(safe-area-inset-top));
         margin-bottom: var(--nav-height);
-        height: calc(100vh - var(--header-height) - var(--nav-height));
+        height: calc(100vh - var(--header-height) - var(--nav-height) - env(safe-area-inset-top));
         overflow-y: auto;
         overflow-x: hidden;
         padding: 12px;
