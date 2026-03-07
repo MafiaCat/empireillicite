@@ -50,21 +50,6 @@ window.getTypeForLevel = function (level) {
     return "Kingpin";
 };
 
-// Layout jump prevention helper for innerHTML replacement
-window.safeSetInnerHTML = function (container, html) {
-    if (!container) return;
-    const currentHeight = container.getBoundingClientRect().height;
-    if (currentHeight > 0) {
-        container.style.minHeight = currentHeight + 'px';
-    }
-    container.innerHTML = html;
-
-    // Give the browser time to paint the new content before releasing the height lock
-    setTimeout(() => {
-        container.style.minHeight = '';
-    }, 50);
-};
-
 window.triggerConfetti = function () {
     const colors = ['#f43f5e', '#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'];
     const container = document.createElement('div');

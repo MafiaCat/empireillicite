@@ -114,6 +114,13 @@
     const initGame = () => {
         try {
             console.log("Initializing game...");
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                if (splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.remove(), 500);
+                }
+            }, 2000);
             updateUI();
             renderAchievements(); // Init Achievements UI
         } catch (e) { console.error("Error in updateUI:", e); }
@@ -150,4 +157,16 @@
     }
     // setInterval(updateDashboard, 1000); // Removed: Function does not exist, likely replaced by updateUI or built-in loop
     setInterval(checkAchievements, 2000);
+
+    // Auto-save when the user leaves or backgrounds the page
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+            saveGame();
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        saveGame();
+    });
+
 })(); // Call setup

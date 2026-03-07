@@ -47,6 +47,7 @@ function addToPlantingQueue(propertyId, count = 1) {
 
     if (planted > 0) {
         // Planting is queued; updateProgressBars() will process it automatically
+        saveGame(); // Save immediately when user manually plants
     }
     return planted;
 }

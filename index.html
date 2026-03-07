@@ -3,7 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <!-- ANTI CACHE HEADERS -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Empire Illicite - Idle Tycoon</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <!-- PWA & Mobile Meta -->
@@ -16,14 +21,26 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;700;800&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/variables.css?v=64">
-    <link rel="stylesheet" href="css/base.css?v=64">
-    <link rel="stylesheet" href="css/layout.css?v=64">
-    <link rel="stylesheet" href="css/components.css?v=64">
-    <link rel="stylesheet" href="css/mobile.css?v=64">
+    <link rel="stylesheet" href="css/variables.css?v=65">
+    <link rel="stylesheet" href="css/base.css?v=65">
+    <link rel="stylesheet" href="css/layout.css?v=65">
+    <link rel="stylesheet" href="css/components.css?v=65">
+    <link rel="stylesheet" href="css/mobile.css?v=65">
 </head>
 
 <body class="light-mode">
+    <!-- SPLASH SCREEN -->
+    <div id="splashScreen"
+        style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; transition: opacity 0.5s ease, visibility 0.5s ease;">
+        <div class="splash-logo"
+            style="font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));">🏴‍☠️
+        </div>
+        <h1 class="splash-title">Empire Illicite</h1>
+        <div class="splash-loader">
+            <div class="spinner"></div>
+            <p>Chargement des données...</p>
+        </div>
+    </div>
 
     <!-- TOP BAR -->
     <div class="top-bar">
@@ -1423,24 +1440,24 @@
         };
     </script>
     <!-- CORE SCRIPTS -->
-    <script src="js/core/config.js?v=64"></script>
-    <script src="js/core/state.js?v=64"></script>
-    <script src="js/core/utils.js?v=64"></script>
+    <script src="js/core/config.js?v=65"></script>
+    <script src="js/core/state.js?v=65"></script>
+    <script src="js/core/utils.js?v=65"></script>
     <!-- MODULES (Dependencies First) -->
-    <script src="js/modules/ui.js?v=64"></script>
-    <script src="js/modules/production.js?v=64"></script>
-    <script src="js/modules/sales.js?v=64"></script>
-    <script src="js/modules/finance.js?v=64"></script>
-    <script src="js/modules/investments.js?v=64"></script>
-    <script src="js/modules/invest-render.js?v=64"></script>
-    <script src="js/modules/territories.js?v=64"></script>
-    <script src="js/modules/quests.js?v=64"></script>
-    <script src="js/modules/achievements.js?v=64"></script>
-    <script src="js/modules/lab.js?v=64"></script>
-    <script src="js/modules/assets.js?v=64"></script>
-    <script src="js/modules/collection-render.js?v=64"></script>
+    <script src="js/modules/ui.js?v=65"></script>
+    <script src="js/modules/production.js?v=65"></script>
+    <script src="js/modules/sales.js?v=65"></script>
+    <script src="js/modules/finance.js?v=65"></script>
+    <script src="js/modules/investments.js?v=65"></script>
+    <script src="js/modules/invest-render.js?v=65"></script>
+    <script src="js/modules/territories.js?v=65"></script>
+    <script src="js/modules/quests.js?v=65"></script>
+    <script src="js/modules/achievements.js?v=65"></script>
+    <script src="js/modules/lab.js?v=65"></script>
+    <script src="js/modules/assets.js?v=65"></script>
+    <script src="js/modules/collection-render.js?v=65"></script>
     <!-- MAIN APP & LOOP -->
-    <script src="js/main.js?v=64"></script>
+    <script src="js/main.js?v=65"></script>
 
     <!-- SERVICE WORKER -->
     <script>

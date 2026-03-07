@@ -265,7 +265,7 @@ function applyOfflineProgression() {
                 }
 
                 // 3. Harvesting
-                if (building.mature > 0 && botanists > 0) {
+                if (building.mature > 0) {
                     if (state.stockGrams + 10 <= maxStock) {
                         building.harvestAcc = (building.harvestAcc || 0) + harvestRate;
                         while (building.harvestAcc >= 1 && building.mature > 0 && state.stockGrams + 10 <= maxStock) {
@@ -279,7 +279,7 @@ function applyOfflineProgression() {
                     }
                 }
 
-                // If nothing is queued, growing, or mature AND botanists didn't add seeds, we can abort the simulation to save CPU
+                // If nothing is queued, growing, or mature AND (we have no botanists OR no seeds left), we can abort the simulation to save CPU
                 if (building.plantingQueue === 0 && building.growing === 0 && (building.mature === 0 || state.stockGrams >= maxStock) && (state.seeds === 0 || botanists === 0)) {
                     break;
                 }

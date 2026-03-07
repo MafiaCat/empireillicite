@@ -333,11 +333,6 @@ function initCharts() {
             const ctx = document.getElementById(c + 'Chart');
             console.log(`[Charts] Canvas for ${c}:`, !!ctx);
             if (ctx) {
-                // Revolut-style gradient fill
-                const gradCrypto = ctx.getContext('2d').createLinearGradient(0, 0, 0, ctx.clientHeight || 100);
-                gradCrypto.addColorStop(0, 'rgba(16, 185, 129, 0.28)');
-                gradCrypto.addColorStop(1, 'rgba(16, 185, 129, 0)');
-
                 cryptoCharts[c] = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -345,36 +340,21 @@ function initCharts() {
                         datasets: [{
                             data: [...cryptoHistory[c]],
                             borderColor: '#10b981',
-                            borderWidth: 2.5,
+                            borderWidth: 2,
                             pointRadius: 0,
-                            pointHoverRadius: 0,
-                            fill: true,
-                            backgroundColor: gradCrypto,
-                            tension: 0.45,
-                            cubicInterpolationMode: 'monotone',
+                            fill: false,
+                            tension: 0.3
                         }]
                     },
                     options: {
-                        layout: { padding: { top: 4, bottom: 2, left: 2, right: 2 } },
-                        scales: {
-                            x: {
-                                display: false,
-                                grid: { display: false, drawBorder: false }
-                            },
-                            y: {
-                                display: false,
-                                grid: { display: false, drawBorder: false }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { enabled: false }
-                        },
+                        scales: { x: { display: false }, y: { display: false } },
+                        legend: { display: false }, // Chart.js 2.x syntax
+                        tooltips: { enabled: false }, // Chart.js 2.x syntax (plural)
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: { duration: 200, easing: 'easeInOutQuart' },
-                        hover: { mode: null },
-                        events: []
+                        animation: { duration: 0 },
+                        hover: { mode: null }, // Disable hover interactions
+                        events: [] // DISABLE ALL EVENTS
                     }
                 });
             }
@@ -384,11 +364,6 @@ function initCharts() {
         ['tech', 'pharma', 'energy'].forEach(s => {
             const ctx = document.getElementById(`stock${s.charAt(0).toUpperCase() + s.slice(1)}Chart`);
             if (ctx) {
-                // Revolut-style gradient fill
-                const gradStock = ctx.getContext('2d').createLinearGradient(0, 0, 0, ctx.clientHeight || 100);
-                gradStock.addColorStop(0, 'rgba(59, 130, 246, 0.28)');
-                gradStock.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
                 stockCharts[s] = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -396,36 +371,21 @@ function initCharts() {
                         datasets: [{
                             data: [...stockHistory[s]],
                             borderColor: '#3b82f6',
-                            borderWidth: 2.5,
+                            borderWidth: 2,
                             pointRadius: 0,
-                            pointHoverRadius: 0,
-                            fill: true,
-                            backgroundColor: gradStock,
-                            tension: 0.45,
-                            cubicInterpolationMode: 'monotone',
+                            fill: false,
+                            tension: 0.3
                         }]
                     },
                     options: {
-                        layout: { padding: { top: 4, bottom: 2, left: 2, right: 2 } },
-                        scales: {
-                            x: {
-                                display: false,
-                                grid: { display: false, drawBorder: false }
-                            },
-                            y: {
-                                display: false,
-                                grid: { display: false, drawBorder: false }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { enabled: false }
-                        },
+                        scales: { x: { display: false }, y: { display: false } },
+                        legend: { display: false }, // Chart.js 2.x syntax
+                        tooltips: { enabled: false }, // Chart.js 2.x syntax (plural)
                         responsive: true,
                         maintainAspectRatio: false,
-                        animation: { duration: 200, easing: 'easeInOutQuart' },
-                        hover: { mode: null },
-                        events: []
+                        animation: { duration: 0 },
+                        hover: { mode: null }, // Disable hover interactions
+                        events: [] // DISABLE ALL EVENTS
                     }
                 });
             }

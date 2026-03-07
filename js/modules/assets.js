@@ -74,11 +74,14 @@ function buyAsset(id, event) {
                 btn.classList.add('approved-pulse-btn');
                 btn.innerHTML = '✅ Approuvé';
 
-                // 3. Execute purchase after showing approved state
+                // Trigger celebratory confetti burst from button 🎊
+                if (typeof triggerConfetti === 'function') triggerConfetti(btn);
+
+                // 3. Execute purchase after showing approved state (extended to 1400ms)
                 setTimeout(() => {
                     executeBuyAsset(id, i);
                     btn.classList.remove('approved-pulse-btn');
-                }, 400);
+                }, 1400);
             }, 500);
             return;
         }
